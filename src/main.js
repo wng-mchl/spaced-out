@@ -5,9 +5,10 @@ const windowWidth = 40, windowHeight = 20
 const display = new ROT.Display({ width: windowWidth, height: windowHeight });
 document.body.appendChild(display.getContainer());
 
-let player = {
-  x: 10,
-  y: 10
+// Ship
+let ship = {
+  x: 2,
+  y: 8
 };
 
 const shipArt = [
@@ -16,20 +17,25 @@ const shipArt = [
   "###[==_____>",
   "   /_/      "
 ];
-// Ship height = 4, width = 12
 const shipHeight = 4, shipWidth = 12;
 
-function drawShip(x, y) {
-  for (let row = 0; row < shipArt.length; row++) {
-    const line = shipArt[row];
-    for (let col = 0; col < line.length; col++) {
-      let ch = line[col];
-      if (ch !== " ") {
-        display.draw(x + col, y + row, ch, "white");
-      }
-    }
+
+// Objects
+const meteorArt = [
+  " .-. ",
+  "(   )",
+  " `-' "
+];
+
+const gameObjects = [
+  {
+    name: "meteor",
+    x: 30,
+    y: 10,
+    art: meteorArt,
+    color: "gray"
   }
-};
+];
 
 function drawBackground() {
   for (let x = 0; x < 40; x++) {
@@ -39,12 +45,57 @@ function drawBackground() {
   }
 };
 
+function drawObject(asciiArt, x, y, color = "white") {
+  for (let row = 0; row < asciiArt.length; row++) {
+    for (let col = 0; col < asciiArt[row].length; col++) {
+      const ch = asciiArt[row][col];
+      if (ch !== " ") {
+        display.draw(x + col, y + row, ch, color);
+      }
+    }
+  }
+};
+
 function drawMap() {
   drawBackground();
-  drawShip(player.x, player.y);
+
+  // Meteor
+  drawObject(meteorArt, 30, 10);
+
+  // Ship
+  drawObject(shipArt, ship.x, ship.y);
 };
 
 drawMap();
+
+
+// Collision detection
+function getOccupiedCells(obj) {
+  const cells = [];
+  for (let row = 0; row < obj.art.length; row++) {
+    for (let col = 0; col < obj.art[row].length; col++) {
+      const ch = obj.art[row][col];
+      if (ch !== " ") {
+        const x = obj.x + col;
+        const y = obj.y + row;
+        cells.push(`${x},${y}`);
+      }
+    }
+  }
+  return cells;
+};
+
+function checkCollision(objA, objB) {
+  const cellsA = new Set(getOccupiedCells(objA));
+  const cellsB = getOccupiedCells(objB);
+
+  for (const cell of cellsB) {
+    if (cellsA.has(cell)) return true;
+  }
+
+  return false;
+};
+
 
 // Key map for arrow key controls
 const keyMap = {
@@ -57,8 +108,8 @@ const keyMap = {
 
 // Function for ship movement
 function moveShip(dx, dy) {
-  const newX = player.x + dx;
-  const newY = player.y + dy;
+  const newX = ship.x + dx;
+  const newY = ship.y + dy;
 
   // Out of bounds checking
   if (newX < 0) return;
@@ -66,11 +117,24 @@ function moveShip(dx, dy) {
   if (newX + shipWidth > windowWidth) return;
   if (newY + shipHeight > windowHeight) return;
 
-  player.x = newX;
-  player.y = newY;
+  const tempPlayer = {
+    x: newX,
+    y: newY,
+    art: shipArt
+  };
+
+  for (const obj of gameObjects) {
+    if (checkCollision(tempPlayer, obj)) {
+      return; // prevent move or trigger game over
+    }
+  }
+
+  ship.x = newX;
+  ship.y = newY;
 
   drawMap();
 };
+
 
 // Key activation
 window.addEventListener("keydown", (e) => {
