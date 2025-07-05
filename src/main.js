@@ -8,13 +8,9 @@ document.body.appendChild(display.getContainer());
 // Ship
 let ship = {
   x: 2,
-  y: 8
+  y: 8,
+  hits: 0
 };
-
-
-
-const shipHeight = shipArt.length;
-const shipWidth = shipArt[0].length;
 
 
 export const gameObjects = [
@@ -67,7 +63,7 @@ function drawMap() {
   }
 
   // draws ship last as its the only one that actually updates
-  drawObject(shipArt, ship.x, ship.y);
+  drawObject(shipArt[ship.hits ], ship.x, ship.y);
 }
 
 
@@ -101,6 +97,14 @@ function checkCollision(objA, objB) {
   return false;
 };
 
+function getShipDimensions() {
+  const currentArt = shipArt[ship.hits]
+  
+  return {
+    height : currentArt.length,
+    width :currentArt[0].length
+  }
+}
 
 // Function for ship movement
 function moveShip(dx, dy) {
@@ -108,19 +112,22 @@ function moveShip(dx, dy) {
   const newY = ship.y + dy;
 
   // Out of bounds checking
-  if (newX < 0) return;
-  if (newY < 0) return;
-  if (newX + shipWidth > windowWidth) return;
-  if (newY + shipHeight > windowHeight) return;
+  const { width, height } = getShipDimensions();
+  if (newX < 0 || newY < 0 || newX + width > windowWidth || newY + height > windowHeight) return;
+
 
   const tempPlayer = {
     x: newX,
     y: newY,
-    art: shipArt
+    art: shipArt[ship.hits]
   };
 
   for (const obj of gameObjects) {
     if (checkCollision(tempPlayer, obj)) {
+      if (ship.hits == 0) 
+      {
+        ship.hits += 1
+      }
       return; // prevent move or trigger game over
     }
   }
@@ -131,23 +138,28 @@ function moveShip(dx, dy) {
   drawMap();
 };
 
-// Key map for arrow key controls
-const keyMap = {
-  ArrowUp: [0, -1],
-  ArrowDown: [0, 1],
-  ArrowLeft: [-1, 0],
-  ArrowRight: [1, 0],
-};
 
+const keysPressed = {}; 
 
-// Key activation
 window.addEventListener("keydown", (e) => {
-
-  if (!(e.key in keyMap)) return;
-
-  const [dx, dy] = keyMap[e.key];
-
-  moveShip(dx, dy);
+  keysPressed[e.key] = true;
 });
+
+window.addEventListener("keyup", (e) => {
+  keysPressed[e.key] = false;
+});
+
+function gameLoop() {
+  if (keysPressed["ArrowUp"]) moveShip(0, -1);
+  if (keysPressed["ArrowDown"]) moveShip(0, 1);
+  if (keysPressed["ArrowLeft"]) moveShip(-1, 0);
+  if (keysPressed["ArrowRight"]) moveShip(1, 0);
+
+  requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);
+
+
 
 
