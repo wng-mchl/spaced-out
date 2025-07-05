@@ -11,11 +11,31 @@ let ship = {
   y: 8
 };
 
+
+
 const shipHeight = shipArt.length;
 const shipWidth = shipArt[0].length;
 
 
-import { shipArt, meteorArt, moonArt, gameObjects } from "./assets";
+export const gameObjects = [
+  {
+    name: "meteor",
+    x: 30,
+    y: 10,
+    art: meteorArt,
+    color: "gray"
+  },
+  {
+    name: "moon",
+    x: 25,
+    y: 2,
+    art: moonArt,
+    color: "yellow"
+  },
+];
+
+
+import { shipArt, meteorArt, moonArt } from "./assets";
 
 
 function drawBackground() {

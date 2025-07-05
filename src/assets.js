@@ -22,20 +22,3 @@ export const moonArt = [
   " _.-`_.`  ", 
   "  '''     ", 
 ];
-
-export const gameObjects = [
-  {
-    name: "meteor",
-    x: 30,
-    y: 10,
-    art: meteorArt,
-    color: "gray"
-  },
-  {
-    name: "moon",
-    x: 25,
-    y: 2,
-    art: moonArt,
-    color: "yellow"
-  }
-];
