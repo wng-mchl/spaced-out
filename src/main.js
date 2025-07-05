@@ -31,16 +31,30 @@ export const gameObjects = [
 ];
 
 
-import { shipArt, meteorArt, moonArt } from "./assets";
 
+import { shipArt, meteorArt, moonArt, background1 } from "./assets";
 
+// background drawing
 function drawBackground() {
-  for (let x = 0; x < windowWidth; x++) {
-    for (let y = 0; y < windowHeight; y++) {
-      display.draw(x, y, ".", "#666", "#000");``
+  for (let y = 0; y < windowHeight; y++) {
+    const line = background1[y % background1.length]; // Wrap vertically if needed
+
+    for (let x = 0; x < windowWidth; x++) {
+      const sourceX = (x + scrollOffset) % line.length; // Wrap horizontally
+      const ch = line[sourceX];
+      display.draw(x, y, ch, "#666", "#000");
     }
   }
-};
+}
+
+// background animation and scrolling 
+let scrollOffset = 0;
+setInterval(() => {
+  scrollOffset = (scrollOffset + 1) % background1[0].length;
+  drawMap(); // This should call drawBackground + drawObjects
+}, 25); // Adjust speed/fps (ms) as needed
+
+
 
 function drawObject(asciiArt, x, y, color = "white") {
   for (let row = 0; row < asciiArt.length; row++) {
@@ -52,7 +66,6 @@ function drawObject(asciiArt, x, y, color = "white") {
     }
   }
 };
-
 
 function drawMap() {
   drawBackground();
@@ -135,7 +148,6 @@ function moveShip(dx, dy) {
   ship.x = newX;
   ship.y = newY;
 
-  drawMap();
 };
 
 
