@@ -1,6 +1,6 @@
 import * as ROT from "rot-js";
 
-const windowWidth = 40, windowHeight = 20
+const windowWidth = 224, windowHeight = 68
 
 const display = new ROT.Display({ width: windowWidth, height: windowHeight });
 document.body.appendChild(display.getContainer());
@@ -11,36 +11,17 @@ let ship = {
   y: 8
 };
 
-const shipArt = [
-  "   __       ",
-  "   \\ \\_____ ",
-  "###[==_____>",
-  "   /_/      "
-];
-const shipHeight = 4, shipWidth = 12;
+const shipHeight = shipArt.length;
+const shipWidth = shipArt[0].length;
 
 
-// Objects
-const meteorArt = [
-  " .-. ",
-  "(   )",
-  " `-' "
-];
+import { shipArt, meteorArt, moonArt, gameObjects } from "./assets";
 
-const gameObjects = [
-  {
-    name: "meteor",
-    x: 30,
-    y: 10,
-    art: meteorArt,
-    color: "gray"
-  }
-];
 
 function drawBackground() {
-  for (let x = 0; x < 40; x++) {
-    for (let y = 0; y < 20; y++) {
-      display.draw(x, y, ".", "#666", "#000");
+  for (let x = 0; x < windowWidth; x++) {
+    for (let y = 0; y < windowHeight; y++) {
+      display.draw(x, y, ".", "#666", "#000");``
     }
   }
 };
@@ -56,15 +37,19 @@ function drawObject(asciiArt, x, y, color = "white") {
   }
 };
 
+
 function drawMap() {
   drawBackground();
 
-  // Meteor
-  drawObject(meteorArt, 30, 10);
+  // properly loop through all game objects using the predefined array
+  for (const obj of gameObjects) {
+    drawObject(obj.art, obj.x, obj.y, obj.color);
+  }
 
-  // Ship
+  // draws ship last as its the only one that actually updates
   drawObject(shipArt, ship.x, ship.y);
-};
+}
+
 
 drawMap();
 
@@ -97,15 +82,6 @@ function checkCollision(objA, objB) {
 };
 
 
-// Key map for arrow key controls
-const keyMap = {
-  ArrowUp: [0, -1],
-  ArrowDown: [0, 1],
-  ArrowLeft: [-1, 0],
-  ArrowRight: [1, 0],
-};
-
-
 // Function for ship movement
 function moveShip(dx, dy) {
   const newX = ship.x + dx;
@@ -135,6 +111,14 @@ function moveShip(dx, dy) {
   drawMap();
 };
 
+// Key map for arrow key controls
+const keyMap = {
+  ArrowUp: [0, -1],
+  ArrowDown: [0, 1],
+  ArrowLeft: [-1, 0],
+  ArrowRight: [1, 0],
+};
+
 
 // Key activation
 window.addEventListener("keydown", (e) => {
@@ -145,3 +129,5 @@ window.addEventListener("keydown", (e) => {
 
   moveShip(dx, dy);
 });
+
+
