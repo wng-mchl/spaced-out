@@ -76,7 +76,7 @@ function drawMap() {
   }
 
   // draws ship last as its the only one that actually updates
-  drawObject(shipArt[ship.hits ], ship.x, ship.y);
+  drawObject(shipArt[ship.hits], ship.x, ship.y);
 }
 
 
@@ -112,10 +112,10 @@ function checkCollision(objA, objB) {
 
 function getShipDimensions() {
   const currentArt = shipArt[ship.hits]
-  
+
   return {
-    height : currentArt.length,
-    width :currentArt[0].length
+    height: currentArt.length,
+    width: currentArt[0].length
   }
 }
 
@@ -137,11 +137,14 @@ function moveShip(dx, dy) {
 
   for (const obj of gameObjects) {
     if (checkCollision(tempPlayer, obj)) {
-      if (ship.hits == 0) 
-      {
+      if (ship.hits == 0) {
         ship.hits += 1
       }
-      return; // prevent move or trigger game over
+
+      //remove collided object
+      const index = gameObjects.indexOf(obj);
+      if (index !== -1) gameObjects.splice(index, 1);
+      return;
     }
   }
 
@@ -151,7 +154,7 @@ function moveShip(dx, dy) {
 };
 
 
-const keysPressed = {}; 
+const keysPressed = {};
 
 window.addEventListener("keydown", (e) => {
   keysPressed[e.key] = true;
