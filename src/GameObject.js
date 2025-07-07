@@ -36,10 +36,10 @@ export class GameObject {
   // Check if object is within bounds
   isWithinBounds(windowWidth, windowHeight) {
     const { width, height } = this.getDimensions();
-    return this.x >= 0 && 
-           this.y >= 0 && 
-           this.x + width <= windowWidth && 
-           this.y + height <= windowHeight;
+    return this.x >= 0 &&
+      this.y >= 0 &&
+      this.x + width <= windowWidth &&
+      this.y + height <= windowHeight;
   }
 
   // Update method to be overridden by subclasses

@@ -7,8 +7,10 @@ export class Ship extends GameObject {
   constructor(x, y) {
     super(x, y, shipArt[0], "white");
     this.hits = 0;
-    this.maxHits = shipArt.length - 1;
+    this.maxHits = 100;
     this.speed = 1;
+    this.damageCooldown = 2000; // damage cooldown
+    this.lastHitTime = 0;
   }
 
   // Move the ship by dx, dy
@@ -19,7 +21,7 @@ export class Ship extends GameObject {
     // Create temporary ship at new position for collision checking
     const tempShip = new Ship(newX, newY);
     tempShip.hits = this.hits;
-    tempShip.art = shipArt[this.hits];
+    tempShip.art = shipArt[0];
 
     // Check bounds
     if (!tempShip.isWithinBounds(windowWidth, windowHeight)) {
@@ -41,10 +43,17 @@ export class Ship extends GameObject {
   }
 
   // Take damage
-  takeDamage(amount = 1) {
-    this.hits = Math.min(this.hits + amount, this.maxHits);
-    this.art = shipArt[this.hits];
-    
+  takeDamage(amount) {
+    const now = Date.now();
+
+    if (now - this.lastHitTime > this.damageCooldown) {
+      this.hits = this.hits + amount
+      this.lastHitTime = now;
+      this.art = shipArt[0];
+
+      console.log("hi")
+    }
+
     if (this.isDestroyed()) {
       this.active = false;
     }

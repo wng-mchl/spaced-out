@@ -64,7 +64,7 @@ export class Renderer {
   drawUI(ship, score = 0) {
     const health = ship.getHealthPercentage();
     const healthText = `Health: ${Math.round(health)}%`;
-    const scoreText = `Score: ${score}`;
+    // const scoreText = `Score: ${score}`;
     
     // Health in top-left
     const healthColor = health > 30 ? "#0f0" : (health > 10 ? "#ff0" : "#f00");
@@ -72,11 +72,11 @@ export class Renderer {
       this.display.draw(i, 0, healthText[i], healthColor);
     }
     
-    // Score in top-right (but check boundaries)
-    const scoreX = Math.max(0, this.windowWidth - scoreText.length);
-    for (let i = 0; i < scoreText.length && scoreX + i < this.windowWidth; i++) {
-      this.display.draw(scoreX + i, 0, scoreText[i], "#fff");
-    }
+    // // Draw score in top-right
+    // const scoreX = this.windowWidth - scoreText.length;
+    // for (let i = 0; i < scoreText.length; i++) {
+    //   this.display.draw(scoreX + i, 0, scoreText[i], "#fff");
+    // }
   }
 
   // Update dimensions when screen resizes

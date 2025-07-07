@@ -220,9 +220,9 @@ export class Game extends ResponsiveGame {
     }
 
     // Update score (simple time-based scoring for now)
-    if (this.gameState === "playing") {
-      this.score += Math.floor(deltaTime / 100);
-    }
+    // if (this.gameState === "playing") {
+    //   this.score += Math.floor(deltaTime / 100);
+    // }
   }
 
   render() {
