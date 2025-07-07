@@ -9,10 +9,14 @@ export class InputHandler {
 
   setupEventListeners() {
     window.addEventListener("keydown", (e) => {
-      // Only set justPressed if it wasn't already pressed
-      if (!this.keysPressed[e.key]) {
-        this.keysJustPressed[e.key] = true;
+      // Prevent key repeat spam by checking if already pressed
+      if (this.keysPressed[e.key]) {
+        e.preventDefault();
+        return; // Key already pressed, ignore repeat events
       }
+      
+      // Only set justPressed if it wasn't already pressed
+      this.keysJustPressed[e.key] = true;
       this.keysPressed[e.key] = true;
       e.preventDefault(); // Prevent page scrolling with arrow keys
     });

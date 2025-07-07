@@ -19,13 +19,14 @@ export class Game {
     this.gameState = "playing"; // "playing", "paused", "gameOver"
     this.score = 0;
     this.lastTime = 0;
+    this.lastBackgroundUpdate = 0;
+    this.backgroundUpdateInterval = 25; // ms between background updates
     
     // Initialize game objects
     this.initializeGame();
     
-    // Start game loops
+    // Start game loop (background animation now handled in main loop)
     this.startGameLoop();
-    this.startBackgroundAnimation();
   }
 
   initializeGame() {
@@ -53,6 +54,14 @@ export class Game {
 
     // Always handle input (for pause/restart functionality)
     this.handleInput();
+    
+    // Update background scrolling (independent of game state)
+    if (currentTime - this.lastBackgroundUpdate >= this.backgroundUpdateInterval) {
+      if (this.gameState === "playing") {
+        this.renderer.updateScroll();
+      }
+      this.lastBackgroundUpdate = currentTime;
+    }
     
     // Only update game objects when playing
     if (this.gameState === "playing") {
@@ -158,15 +167,6 @@ export class Game {
         this.display.draw(startX + i, centerY + 2, restartText[i], "#0f0", "#000");
       }
     }
-  }
-
-  // Background animation (separate from main game loop for smoother scrolling)
-  startBackgroundAnimation() {
-    setInterval(() => {
-      if (this.gameState === "playing") {
-        this.renderer.updateScroll();
-      }
-    }, 25); // 40 FPS for background
   }
 
   startGameLoop() {
