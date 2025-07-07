@@ -61,10 +61,10 @@ export class Renderer {
   }
 
   // Draw UI elements (health, score, etc.) with mobile-friendly sizing
-  drawUI(ship, score = 0) {
+  drawUI(ship, score = 0, difficultyInfo = null) {
     const health = ship.getHealthPercentage();
     const healthText = `Health: ${Math.round(health)}%`;
-    // const scoreText = `Score: ${score}`;
+    const scoreText = `Score: ${score}`;
     
     // Health in top-left
     const healthColor = health > 30 ? "#0f0" : (health > 10 ? "#ff0" : "#f00");
@@ -72,11 +72,22 @@ export class Renderer {
       this.display.draw(i, 0, healthText[i], healthColor);
     }
     
-    // // Draw score in top-right
-    // const scoreX = this.windowWidth - scoreText.length;
-    // for (let i = 0; i < scoreText.length; i++) {
-    //   this.display.draw(scoreX + i, 0, scoreText[i], "#fff");
-    // }
+    // Score in top-right (but check boundaries)
+    const scoreX = Math.max(0, this.windowWidth - scoreText.length);
+    for (let i = 0; i < scoreText.length && scoreX + i < this.windowWidth; i++) {
+      this.display.draw(scoreX + i, 0, scoreText[i], "#fff");
+    }
+    
+    // Difficulty level in top-center (if provided)
+    if (difficultyInfo && this.windowHeight > 10) {
+      const diffText = `Level ${difficultyInfo.level}`;
+      const diffX = Math.floor((this.windowWidth - diffText.length) / 2);
+      const diffColor = difficultyInfo.level > 5 ? "#f00" : (difficultyInfo.level > 3 ? "#ff0" : "#0f0");
+      
+      for (let i = 0; i < diffText.length && diffX + i < this.windowWidth && diffX + i >= 0; i++) {
+        this.display.draw(diffX + i, 0, diffText[i], diffColor);
+      }
+    }
   }
 
   // Update dimensions when screen resizes

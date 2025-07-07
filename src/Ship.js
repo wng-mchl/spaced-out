@@ -7,7 +7,7 @@ export class Ship extends GameObject {
   constructor(x, y) {
     super(x, y, shipArt[0], "white");
     this.hits = 0;
-    this.maxHits = 100;
+    this.maxHits = 4;
     this.speed = 1;
     this.damageCooldown = 2000; // damage cooldown
     this.lastHitTime = 0;

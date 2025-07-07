@@ -1,11 +1,12 @@
-// Game.js - Main game controller with responsive design
+// Game.js - Main game controller with responsive design and dynamic obstacles
 
 import { Ship } from './Ship.js';
-import { Meteor, Moon } from './Obstacle.js';
+import { Meteor, Moon, Asteroid } from './Obstacle.js';
 import { Renderer } from './Renderer.js';
 import { InputHandler } from './InputHandler.js';
 import { ResponsiveGame } from './ResponsiveGame.js';
 import { MobileControls } from './MobileControls.js';
+import { ObstacleSpawner } from './ObstacleSpawner.js';
 
 export class Game extends ResponsiveGame {
   constructor(display) {
@@ -28,6 +29,7 @@ export class Game extends ResponsiveGame {
     this.lastTime = 0;
     this.lastBackgroundUpdate = 0;
     this.backgroundUpdateInterval = 25;
+    this.lastObstacleCount = 0; // Track obstacles for scoring
     
     // Initialize game objects
     this.initializeGame();
@@ -90,6 +92,11 @@ export class Game extends ResponsiveGame {
     // Update renderer
     this.renderer = new Renderer(this.display, this.windowWidth, this.windowHeight);
     
+    // Update obstacle spawner dimensions
+    if (this.obstacleSpawner) {
+      this.obstacleSpawner.updateDimensions(this.windowWidth, this.windowHeight);
+    }
+    
     // Update mobile controls
     const needsMobile = newDimensions.isMobile;
     const hasMobile = !!this.mobileControls;
@@ -140,17 +147,19 @@ export class Game extends ResponsiveGame {
   }
 
   initializeGame() {
-    // Create ship
-    this.ship = new Ship(2, 8);
+    // Create ship (start further left to give dodging room)
+    this.ship = new Ship(5, Math.floor(this.windowHeight / 2));
     
-    // Create obstacles
-    this.obstacles = [
-      new Meteor(30, 10),
-      new Moon(25, 2)
-    ];
+    // Start with empty obstacles array (they'll be spawned dynamically)
+    this.obstacles = [];
+    
+    // Initialize obstacle spawner
+    this.obstacleSpawner = new ObstacleSpawner(this.windowWidth, this.windowHeight);
     
     // All game objects for rendering
     this.updateGameObjects();
+    
+    console.log('Game initialized with dynamic obstacles');
   }
 
   updateGameObjects() {
@@ -208,10 +217,16 @@ export class Game extends ResponsiveGame {
   }
 
   update(deltaTime) {
+    // Update obstacle spawner (handles spawning and cleanup)
+    this.obstacleSpawner.update(performance.now(), this.obstacles);
+    
     // Update all game objects
     for (const obj of this.gameObjects) {
       obj.update(deltaTime);
     }
+
+    // Update game objects array (obstacles may have been added/removed)
+    this.updateGameObjects();
 
     // Check game over condition
     if (this.ship.isDestroyed() && this.gameState === "playing") {
@@ -219,16 +234,36 @@ export class Game extends ResponsiveGame {
       console.log("Game Over! Final score:", this.score);
     }
 
-    // Update score (simple time-based scoring for now)
-    // if (this.gameState === "playing") {
-    //   this.score += Math.floor(deltaTime / 100);
-    // }
+    // Update score based on survival time and obstacles dodged
+    if (this.gameState === "playing") {
+      // Time-based scoring
+      this.score += Math.floor(deltaTime / 50);
+      
+      // Bonus points for dodging obstacles
+      const currentObstacleCount = this.obstacles.length;
+      if (currentObstacleCount > this.lastObstacleCount) {
+        // New obstacles spawned, potential for bonus points
+        this.lastObstacleCount = currentObstacleCount;
+      }
+      
+      // Award points for obstacles that have passed the ship
+      for (const obstacle of this.obstacles) {
+        if (obstacle.spawned && !obstacle.passedShip && obstacle.x + obstacle.getDimensions().width < this.ship.x) {
+          obstacle.passedShip = true;
+          this.score += 50; // Bonus for dodging
+          console.log(`Dodged ${obstacle.name}! +50 points`);
+        }
+      }
+    }
   }
 
   render() {
     this.renderer.clear();
     this.renderer.render(this.gameObjects);
-    this.renderer.drawUI(this.ship, this.score);
+    
+    // Get difficulty info for UI
+    const difficultyInfo = this.obstacleSpawner ? this.obstacleSpawner.getDifficultyInfo() : null;
+    this.renderer.drawUI(this.ship, this.score, difficultyInfo);
     
     // Draw game state messages
     this.drawGameStateUI();
@@ -256,19 +291,29 @@ export class Game extends ResponsiveGame {
       
     } else if (this.gameState === "gameOver") {
       const gameOverText = "=== GAME OVER ===";
-      const restartText = "Press R to restart";
       const finalScore = `Final Score: ${this.score}`;
+      const difficultyInfo = this.obstacleSpawner ? this.obstacleSpawner.getDifficultyInfo() : null;
+      const levelReached = difficultyInfo ? `Level Reached: ${difficultyInfo.level}` : "";
+      const restartText = "Press R to restart";
       
       // Draw game over title
       let startX = centerX - Math.floor(gameOverText.length / 2);
       for (let i = 0; i < gameOverText.length; i++) {
-        this.display.draw(startX + i, centerY - 2, gameOverText[i], "#f00", "#000");
+        this.display.draw(startX + i, centerY - 3, gameOverText[i], "#f00", "#000");
       }
       
       // Draw final score
       startX = centerX - Math.floor(finalScore.length / 2);
       for (let i = 0; i < finalScore.length; i++) {
-        this.display.draw(startX + i, centerY, finalScore[i], "#fff", "#000");
+        this.display.draw(startX + i, centerY - 1, finalScore[i], "#fff", "#000");
+      }
+      
+      // Draw level reached (if available)
+      if (levelReached && this.windowHeight > 20) {
+        startX = centerX - Math.floor(levelReached.length / 2);
+        for (let i = 0; i < levelReached.length; i++) {
+          this.display.draw(startX + i, centerY, levelReached[i], "#ff0", "#000");
+        }
       }
       
       // Draw restart instruction
@@ -297,6 +342,13 @@ export class Game extends ResponsiveGame {
     this.gameState = "playing";
     this.score = 0;
     this.lastTime = 0;
+    this.lastObstacleCount = 0;
+    
+    // Reset obstacle spawner
+    if (this.obstacleSpawner) {
+      this.obstacleSpawner.reset();
+    }
+    
     this.initializeGame();
     console.log("Game restarted!");
   }

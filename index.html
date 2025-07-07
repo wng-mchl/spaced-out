@@ -57,6 +57,7 @@
   <div class="loading-screen" id="loading">
     <div class="loading-text">🚀 Loading Space Game...</div>
   </div>
+
   
   <!-- Dynamic instructions based on device -->
   <div class="instructions" id="instructions">
@@ -75,9 +76,9 @@
       const instructions = document.getElementById('instructions');
       
       if (isMobile) {
-        instructions.innerHTML = 'Use directional buttons to move • Tap pause/restart buttons';
+        instructions.innerHTML = 'Dodge incoming obstacles! • Use directional buttons to move • Tap pause/restart buttons';
       } else {
-        instructions.innerHTML = 'Use arrow keys or WASD to move • P to pause • R to restart when game over';
+        instructions.innerHTML = 'Dodge incoming obstacles! • Arrow keys or WASD to move • P to pause • R to restart';
       }
     }
 
