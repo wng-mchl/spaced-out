@@ -19,7 +19,7 @@ export class Ship extends GameObject {
     // Create temporary ship at new position for collision checking
     const tempShip = new Ship(newX, newY);
     tempShip.hits = this.hits;
-    tempShip.art = shipArt[0];
+    tempShip.art = shipArt;
 
     // Check bounds
     if (!tempShip.isWithinBounds(windowWidth, windowHeight)) {
@@ -42,12 +42,17 @@ export class Ship extends GameObject {
   }
 
   // Take damage
-  takeDamage(amount = 1) {
-    this.hits = Math.min(this.hits + amount, this.maxHits);
-    this.art = shipArt[0];
-    
-    console.log(`💥 Ship damage! Hits: ${this.hits}/${this.maxHits}, Health: ${this.getHealthPercentage()}%`);
-    
+  takeDamage(amount) {
+    const now = Date.now();
+
+    if (now - this.lastHitTime > this.damageCooldown) {
+      this.hits = this.hits + amount
+      this.lastHitTime = now;
+      this.art = shipArt;
+
+      console.log("hi")
+    }
+
     if (this.isDestroyed()) {
       this.active = false;
       console.log("💀 Ship destroyed!");
@@ -75,7 +80,7 @@ export class Ship extends GameObject {
     if (other.type === "meteor" || other.type === "moon" || other.type === "asteroid") {
       console.log(`🔥 Ship took damage from ${other.name}! Health: ${this.getHealthPercentage()}%`);
       this.takeDamage(1);
-      
+
       // Visual feedback - change ship art immediately
       this.art = shipArt[0];
     }

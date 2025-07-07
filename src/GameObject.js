@@ -28,8 +28,8 @@ export class GameObject {
   // Get dimensions of the object
   getDimensions() {
     return {
-      width: this.art[0].length,
-      height: this.art.length
+      width: this.art[0][0].length,
+      height: this.art[0].length
     };
   }
 
