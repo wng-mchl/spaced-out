@@ -2,45 +2,122 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#000000" />
+  
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Space Navigation Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  
+  <title>🚀 Space Navigation Game</title>
+  
   <style>
-    body {
+    /* Critical CSS for immediate loading */
+    html, body {
       margin: 0;
-      padding: 20px;
+      padding: 0;
       background-color: #000;
       color: #fff;
       font-family: monospace;
+      overflow: hidden;
+      touch-action: none;
+      height: 100%;
+    }
+    
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
+      justify-content: center;
+      z-index: 9999;
     }
     
-    h1 {
-      margin-bottom: 10px;
-      color: #0ff;
+    .loading-text {
+      color: #00ffff;
+      font-size: 1.5rem;
+      animation: pulse 1s infinite;
     }
     
-    .instructions {
-      margin-bottom: 20px;
-      text-align: center;
-      color: #888;
-    }
-    
-    .game-container {
-      border: 2px solid #333;
-      background-color: #000;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
   </style>
 </head>
 <body>
-  <div class="instructions">
-    Use arrow keys or WASD to move • P to pause • R to restart when game over
+  <!-- Loading screen -->
+  <div class="loading-screen" id="loading">
+    <div class="loading-text">🚀 Loading Space Game...</div>
   </div>
-  <div class="game-container">
-    <script type="module" src="./src/main.js"></script>
+  
+  <!-- Dynamic instructions based on device -->
+  <div class="instructions" id="instructions">
+    Loading controls...
   </div>
+  
+  <!-- Game container -->
+  <div class="game-container" id="game-container">
+    <!-- Game will be inserted here -->
+  </div>
+
+  <script type="module">
+    // Update instructions based on device
+    function updateInstructions() {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+      const instructions = document.getElementById('instructions');
+      
+      if (isMobile) {
+        instructions.innerHTML = 'Use directional buttons to move • Tap pause/restart buttons';
+      } else {
+        instructions.innerHTML = 'Use arrow keys or WASD to move • P to pause • R to restart when game over';
+      }
+    }
+
+    // Initialize instructions
+    updateInstructions();
+    
+    // Update on resize
+    window.addEventListener('resize', updateInstructions);
+    
+    // Remove loading screen once game loads
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loading = document.getElementById('loading');
+        if (loading) {
+          loading.style.opacity = '0';
+          setTimeout(() => loading.remove(), 1000);
+        }
+      }, 1500);
+    });
+
+    // Prevent zoom on iOS
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+    document.addEventListener('gesturechange', (e) => e.preventDefault());
+    document.addEventListener('gestureend', (e) => e.preventDefault());
+    
+    // // Prevent context menu ONLY on game elements (not entire page)
+    // document.addEventListener('contextmenu', (e) => {
+    //   // Only prevent context menu on game-related elements
+    //   if (e.target.closest('.game-container, .mobile-controls')) {
+    //     e.preventDefault();
+    //   }
+    // });
+    
+    // Performance optimization: disable hover effects on touch devices
+    if ('ontouchstart' in window) {
+      document.body.classList.add('touch-device');
+    }
+  </script>
+  
+  <!-- Main game script -->
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>

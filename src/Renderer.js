@@ -1,4 +1,4 @@
-// Renderer.js - Handles all drawing operations
+// Renderer.js - Handles all drawing operations with responsive support
 
 import { background1 } from './assets.js';
 
@@ -8,6 +8,8 @@ export class Renderer {
     this.windowWidth = windowWidth;
     this.windowHeight = windowHeight;
     this.scrollOffset = 0;
+    
+    console.log(`Renderer initialized: ${windowWidth}x${windowHeight}`);
   }
 
   // Draw the scrolling background
@@ -58,21 +60,29 @@ export class Renderer {
     }
   }
 
-  // Draw UI elements (health, score, etc.)
+  // Draw UI elements (health, score, etc.) with mobile-friendly sizing
   drawUI(ship, score = 0) {
     const health = ship.getHealthPercentage();
     const healthText = `Health: ${Math.round(health)}%`;
     const scoreText = `Score: ${score}`;
     
-    // Draw health in top-left
-    for (let i = 0; i < healthText.length; i++) {
-      this.display.draw(i, 0, healthText[i], health > 30 ? "#0f0" : "#f00");
+    // Health in top-left
+    const healthColor = health > 30 ? "#0f0" : (health > 10 ? "#ff0" : "#f00");
+    for (let i = 0; i < healthText.length && i < this.windowWidth; i++) {
+      this.display.draw(i, 0, healthText[i], healthColor);
     }
     
-    // Draw score in top-right
-    const scoreX = this.windowWidth - scoreText.length;
-    for (let i = 0; i < scoreText.length; i++) {
+    // Score in top-right (but check boundaries)
+    const scoreX = Math.max(0, this.windowWidth - scoreText.length);
+    for (let i = 0; i < scoreText.length && scoreX + i < this.windowWidth; i++) {
       this.display.draw(scoreX + i, 0, scoreText[i], "#fff");
     }
+  }
+
+  // Update dimensions when screen resizes
+  updateDimensions(windowWidth, windowHeight) {
+    this.windowWidth = windowWidth;
+    this.windowHeight = windowHeight;
+    console.log(`Renderer updated: ${windowWidth}x${windowHeight}`);
   }
 }

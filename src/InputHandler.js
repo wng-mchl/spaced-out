@@ -1,10 +1,15 @@
-// InputHandler.js - Manages all user input
+// InputHandler.js - Manages all user input (keyboard + mobile)
 
 export class InputHandler {
-  constructor() {
+  constructor(isMobile = false) {
     this.keysPressed = {};
     this.keysJustPressed = {};
+    this.mobileDirection = { dx: 0, dy: 0 };
+    this.mobileActions = new Set();
+    this.isMobile = isMobile;
+    
     this.setupEventListeners();
+    this.setupMobileEvents();
   }
 
   setupEventListeners() {
@@ -28,12 +33,27 @@ export class InputHandler {
     });
   }
 
+  setupMobileEvents() {
+    // Listen for mobile action events
+    window.addEventListener('mobileAction', (e) => {
+      this.mobileActions.add(e.detail.action);
+    });
+  }
+
   // Call this at the end of each frame to clear "just pressed" states
   update() {
     // Clear all "just pressed" states after they've been processed
     for (const key in this.keysJustPressed) {
       this.keysJustPressed[key] = false;
     }
+    
+    // Clear mobile actions
+    this.mobileActions.clear();
+  }
+
+  // Set mobile controls reference
+  setMobileControls(mobileControls) {
+    this.mobileControls = mobileControls;
   }
 
   // Check if a key is currently pressed
@@ -46,11 +66,20 @@ export class InputHandler {
     return !!this.keysJustPressed[key];
   }
 
-  // Get movement direction based on pressed keys
+  // Get movement direction based on pressed keys OR mobile input
   getMovementDirection() {
     let dx = 0;
     let dy = 0;
 
+    // Mobile touch input takes priority
+    if (this.isMobile && this.mobileControls) {
+      const mobileDir = this.mobileControls.getMovementDirection();
+      if (mobileDir.dx !== 0 || mobileDir.dy !== 0) {
+        return mobileDir;
+      }
+    }
+
+    // Keyboard input
     if (this.isKeyPressed("ArrowLeft") || this.isKeyPressed("a") || this.isKeyPressed("A")) {
       dx -= 1;
     }
@@ -69,6 +98,12 @@ export class InputHandler {
 
   // Check for other action keys (using "just pressed" for single-trigger actions)
   isActionTriggered(action) {
+    // Check mobile actions first
+    if (this.isMobile && this.mobileActions.has(action)) {
+      return true;
+    }
+
+    // Check keyboard
     switch (action) {
       case "shoot":
         return this.isKeyJustPressed(" ") || this.isKeyJustPressed("Space");
@@ -98,5 +133,10 @@ export class InputHandler {
   // Get all currently pressed keys (for debugging)
   getPressedKeys() {
     return Object.keys(this.keysPressed).filter(key => this.keysPressed[key]);
+  }
+
+  // Update mobile mode
+  setMobileMode(isMobile) {
+    this.isMobile = isMobile;
   }
 }

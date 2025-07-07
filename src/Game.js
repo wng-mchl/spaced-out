@@ -1,32 +1,142 @@
-// Game.js - Main game controller
+// Game.js - Main game controller with responsive design
 
 import { Ship } from './Ship.js';
 import { Meteor, Moon } from './Obstacle.js';
 import { Renderer } from './Renderer.js';
 import { InputHandler } from './InputHandler.js';
+import { ResponsiveGame } from './ResponsiveGame.js';
+import { MobileControls } from './MobileControls.js';
 
-export class Game {
-  constructor(display, windowWidth, windowHeight) {
+export class Game extends ResponsiveGame {
+  constructor(display) {
+    super(); // Initialize responsive system
+    
     this.display = display;
-    this.windowWidth = windowWidth;
-    this.windowHeight = windowHeight;
+    this.updateDisplaySize(); // Set initial size
     
     // Initialize game systems
-    this.renderer = new Renderer(display, windowWidth, windowHeight);
-    this.inputHandler = new InputHandler();
+    this.renderer = new Renderer(display, this.windowWidth, this.windowHeight);
+    this.inputHandler = new InputHandler(this.currentDimensions.isMobile);
+    
+    // Mobile controls
+    this.mobileControls = null;
+    this.setupMobileControls();
     
     // Game state
-    this.gameState = "playing"; // "playing", "paused", "gameOver"
+    this.gameState = "playing";
     this.score = 0;
     this.lastTime = 0;
     this.lastBackgroundUpdate = 0;
-    this.backgroundUpdateInterval = 25; // ms between background updates
+    this.backgroundUpdateInterval = 25;
     
     // Initialize game objects
     this.initializeGame();
     
-    // Start game loop (background animation now handled in main loop)
+    // Start game loop
     this.startGameLoop();
+    
+    // Apply initial styling
+    this.applyResponsiveStyles();
+  }
+
+  updateDisplaySize() {
+    const dims = this.getDimensions();
+    this.windowWidth = dims.width;
+    this.windowHeight = dims.height;
+    
+    console.log('Updating display size:', dims);
+    
+    // Resize the ROT.js display with proper font sizing
+    this.display.setOptions({
+      width: this.windowWidth,
+      height: this.windowHeight,
+      fontSize: dims.fontSize,
+      fontFamily: "monospace",
+      spacing: 1.0
+    });
+    
+    // Apply CSS styling to the display container
+    const container = this.display.getContainer();
+    if (dims.isMobile) {
+      container.style.fontSize = `${dims.fontSize}px`;
+      container.style.lineHeight = `${dims.lineHeight}px`;
+    }
+  }
+
+  setupMobileControls() {
+    if (this.currentDimensions.isMobile) {
+      this.mobileControls = new MobileControls(document.body);
+      this.inputHandler.setMobileControls(this.mobileControls);
+      this.mobileControls.show();
+    }
+  }
+
+  applyResponsiveStyles() {
+    const container = this.display.getContainer();
+    const styles = this.getContainerStyles();
+    
+    Object.assign(container.style, styles);
+    container.classList.add('game-display');
+  }
+
+  // Override the resize handler from ResponsiveGame
+  onResize(newDimensions) {
+    const wasPlaying = this.gameState === "playing";
+    this.gameState = "paused"; // Pause during resize
+    
+    // Update display
+    this.updateDisplaySize();
+    
+    // Update renderer
+    this.renderer = new Renderer(this.display, this.windowWidth, this.windowHeight);
+    
+    // Update mobile controls
+    const needsMobile = newDimensions.isMobile;
+    const hasMobile = !!this.mobileControls;
+    
+    if (needsMobile && !hasMobile) {
+      // Add mobile controls
+      this.setupMobileControls();
+    } else if (!needsMobile && hasMobile) {
+      // Remove mobile controls
+      this.mobileControls.destroy();
+      this.mobileControls = null;
+    }
+    
+    // Update input handler
+    this.inputHandler.setMobileMode(needsMobile);
+    if (this.mobileControls) {
+      this.inputHandler.setMobileControls(this.mobileControls);
+    }
+    
+    // Reposition game objects to fit new screen
+    this.repositionGameObjects();
+    
+    // Apply new styles
+    this.applyResponsiveStyles();
+    
+    // Resume if was playing
+    if (wasPlaying) {
+      this.gameState = "playing";
+    }
+    
+    console.log('Game resized to:', newDimensions);
+  }
+
+  repositionGameObjects() {
+    // Keep ship in safe position
+    const shipDims = this.ship.getDimensions();
+    this.ship.x = Math.min(this.ship.x, this.windowWidth - shipDims.width);
+    this.ship.y = Math.min(this.ship.y, this.windowHeight - shipDims.height);
+    
+    // Reposition obstacles to stay on screen
+    for (const obstacle of this.obstacles) {
+      const obsDims = obstacle.getDimensions();
+      obstacle.x = Math.min(obstacle.x, this.windowWidth - obsDims.width);
+      obstacle.y = Math.min(obstacle.y, this.windowHeight - obsDims.height);
+    }
+    
+    this.updateGameObjects();
   }
 
   initializeGame() {
