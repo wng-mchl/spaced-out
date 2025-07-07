@@ -20,9 +20,9 @@ export class ObstacleSpawner {
     
     // Obstacle types and their spawn weights
     this.obstacleTypes = [
-      { type: 'meteor', weight: 40, minSpeed: 1, maxSpeed: 3 },
-      { type: 'moon', weight: 20, minSpeed: 0.5, maxSpeed: 2 },
-      { type: 'asteroid', weight: 30, minSpeed: 2, maxSpeed: 4 }
+      { type: 'meteor', weight: 40, minSpeed: 0.5, maxSpeed: 1.5 },
+      { type: 'moon', weight: 20, minSpeed: 0.25, maxSpeed: 1 },
+      { type: 'asteroid', weight: 30, minSpeed: 1, maxSpeed: 2 }
     ];
     
     console.log('ObstacleSpawner initialized');
@@ -88,9 +88,11 @@ export class ObstacleSpawner {
         obstacle = new Meteor(spawnX, spawnY);
     }
     
-    // Set the speed
+    // Set the speed and collision tracking
     obstacle.speed = speed;
-    obstacle.spawned = true; // Mark as dynamically spawned
+    obstacle.spawned = true;      // Mark as dynamically spawned
+    obstacle.hasHitShip = false;  // Track if this obstacle has already hit the ship
+    obstacle.passedShip = false;  // Track if this obstacle has passed the ship for scoring
     
     console.log(`Spawned ${obstacleType.type} at (${spawnX}, ${Math.round(spawnY)}) with speed ${speed}`);
     return obstacle;

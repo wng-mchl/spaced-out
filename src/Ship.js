@@ -9,8 +9,6 @@ export class Ship extends GameObject {
     this.hits = 0;
     this.maxHits = 4;
     this.speed = 1;
-    this.damageCooldown = 2000; // damage cooldown
-    this.lastHitTime = 0;
   }
 
   // Move the ship by dx, dy
@@ -28,11 +26,12 @@ export class Ship extends GameObject {
       return false;
     }
 
-    // Check collisions with obstacles
+    // Check collisions with obstacles at new position
     for (const obstacle of obstacles) {
       if (this.checkCollision(tempShip, obstacle)) {
-        this.onCollision(obstacle);
-        return false; // Don't move if collision would occur
+        // Don't move into collision, but don't take damage here
+        // Damage will be handled by the main collision detection system
+        return false;
       }
     }
 
@@ -43,19 +42,15 @@ export class Ship extends GameObject {
   }
 
   // Take damage
-  takeDamage(amount) {
-    const now = Date.now();
-
-    if (now - this.lastHitTime > this.damageCooldown) {
-      this.hits = this.hits + amount
-      this.lastHitTime = now;
-      this.art = shipArt[0];
-
-      console.log("hi")
-    }
-
+  takeDamage(amount = 1) {
+    this.hits = Math.min(this.hits + amount, this.maxHits);
+    this.art = shipArt[0];
+    
+    console.log(`💥 Ship damage! Hits: ${this.hits}/${this.maxHits}, Health: ${this.getHealthPercentage()}%`);
+    
     if (this.isDestroyed()) {
       this.active = false;
+      console.log("💀 Ship destroyed!");
     }
   }
 
@@ -77,8 +72,12 @@ export class Ship extends GameObject {
 
   // Handle collision
   onCollision(other) {
-    if (other.name === "meteor" || other.name === "moon") {
+    if (other.type === "meteor" || other.type === "moon" || other.type === "asteroid") {
+      console.log(`🔥 Ship took damage from ${other.name}! Health: ${this.getHealthPercentage()}%`);
       this.takeDamage(1);
+      
+      // Visual feedback - change ship art immediately
+      this.art = shipArt[0];
     }
   }
 

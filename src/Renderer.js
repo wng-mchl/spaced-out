@@ -25,11 +25,24 @@ export class Renderer {
     }
   }
 
-  // Draw a single game object
+  // Draw a single game object with enhanced ship rendering
   drawObject(gameObject) {
     if (!gameObject.active) return;
 
-    const { art, x, y, color } = gameObject;
+    let { art, x, y, color } = gameObject;
+    
+    // Special rendering for ships based on damage state
+    if (gameObject.constructor.name === 'Ship') {
+      const healthPercent = gameObject.getHealthPercentage();
+      if (healthPercent <= 30) {
+        color = "#f00"; // Red when heavily damaged
+      } else if (healthPercent <= 60) {
+        color = "#ff0"; // Yellow when moderately damaged
+      } else {
+        color = "#0f0"; // Green when healthy
+      }
+    }
+    
     for (let row = 0; row < art.length; row++) {
       for (let col = 0; col < art[row].length; col++) {
         const ch = art[row][col];
@@ -64,7 +77,7 @@ export class Renderer {
   drawUI(ship, score = 0, difficultyInfo = null) {
     const health = ship.getHealthPercentage();
     const healthText = `Health: ${Math.round(health)}%`;
-    const scoreText = `Score: ${score}`;
+    // const scoreText = `Score: ${score}`;
     
     // Health in top-left
     const healthColor = health > 30 ? "#0f0" : (health > 10 ? "#ff0" : "#f00");
@@ -73,10 +86,10 @@ export class Renderer {
     }
     
     // Score in top-right (but check boundaries)
-    const scoreX = Math.max(0, this.windowWidth - scoreText.length);
-    for (let i = 0; i < scoreText.length && scoreX + i < this.windowWidth; i++) {
-      this.display.draw(scoreX + i, 0, scoreText[i], "#fff");
-    }
+    // const scoreX = Math.max(0, this.windowWidth - scoreText.length);
+    // for (let i = 0; i < scoreText.length && scoreX + i < this.windowWidth; i++) {
+    //   this.display.draw(scoreX + i, 0, scoreText[i], "#fff");
+    // }
     
     // Difficulty level in top-center (if provided)
     if (difficultyInfo && this.windowHeight > 10) {

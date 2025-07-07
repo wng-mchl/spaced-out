@@ -225,6 +225,9 @@ export class Game extends ResponsiveGame {
       obj.update(deltaTime);
     }
 
+    // Check collisions between ship and all obstacles every frame
+    this.checkCollisions();
+
     // Update game objects array (obstacles may have been added/removed)
     this.updateGameObjects();
 
@@ -252,6 +255,28 @@ export class Game extends ResponsiveGame {
           obstacle.passedShip = true;
           this.score += 50; // Bonus for dodging
           console.log(`Dodged ${obstacle.name}! +50 points`);
+        }
+      }
+    }
+  }
+
+  // Check collisions between ship and obstacles every frame
+  checkCollisions() {
+    for (const obstacle of this.obstacles) {
+      if (this.ship.checkCollision(this.ship, obstacle)) {
+        // Mark obstacle as having hit to prevent multiple damage
+        if (!obstacle.hasHitShip) {
+          obstacle.hasHitShip = true;
+          this.ship.onCollision(obstacle);
+          console.log(`💥 Ship hit by ${obstacle.name} at (${Math.round(obstacle.x)}, ${Math.round(obstacle.y)})!`);
+          
+          // Visual feedback - could add screen shake or particle effects here
+          if (navigator.vibrate) {
+            navigator.vibrate(200); // Haptic feedback on mobile
+          }
+          
+          // Add a brief pause for dramatic effect (optional)
+          // You could add screen flash or other effects here
         }
       }
     }

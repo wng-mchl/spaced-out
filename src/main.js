@@ -27,10 +27,17 @@ window.game = game;
 
 // Log device info
 const dims = game.getDimensions();
-console.log("Space Game initialized!");
+console.log("🚀 Space Game initialized!");
 console.log(`Device: ${dims.isMobile ? 'Mobile' : 'Desktop'}`);
 console.log(`Screen size: ${dims.width}x${dims.height}`);
-console.log(`Controls: ${dims.isMobile ? 'Touch joystick + buttons' : 'Arrow keys (or WASD) + P/R'}`);
+console.log(`Controls: ${dims.isMobile ? 'Touch buttons' : 'Arrow keys (or WASD) + P/R'}`);
+console.log("🎮 Game features:");
+console.log("  • Dynamic obstacle spawning from right side");
+console.log("  • Progressive difficulty scaling");
+console.log("  • Real-time collision detection");
+console.log("  • Health-based damage system");
+console.log("  • Dodge bonuses and survival scoring");
+console.log("💡 Watch the console for collision and scoring events!");
 
 // Performance monitoring
 let frameCount = 0;
