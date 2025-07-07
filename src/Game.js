@@ -48,21 +48,18 @@ export class Game {
 
   // Main game loop
   gameLoop(currentTime) {
-    if (this.gameState !== "playing") {
-      requestAnimationFrame((time) => this.gameLoop(time));
-      return;
-    }
-
     const deltaTime = currentTime - this.lastTime;
     this.lastTime = currentTime;
 
-    // Handle input
+    // Always handle input (for pause/restart functionality)
     this.handleInput();
     
-    // Update game objects
-    this.update(deltaTime);
+    // Only update game objects when playing
+    if (this.gameState === "playing") {
+      this.update(deltaTime);
+    }
     
-    // Render
+    // Always render (to show pause/game over screens)
     this.render();
     
     // Continue loop
