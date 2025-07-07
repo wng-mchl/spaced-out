@@ -71,13 +71,48 @@ export class Renderer {
     for (const obj of gameObjects) {
       this.drawObject(obj);
     }
+    
+    // Debug: Draw collision boxes (optional, can be toggled)
+    if (window.game && window.game.collisionDebugMode) {
+      this.drawCollisionBoxes(gameObjects);
+    }
+  }
+
+  // Debug: Draw bounding boxes for collision detection
+  drawCollisionBoxes(gameObjects) {
+    for (const obj of gameObjects) {
+      if (!obj.active) continue;
+      
+      const dims = obj.getDimensions();
+      const left = Math.round(obj.x);
+      const right = Math.round(obj.x + dims.width) - 1;
+      const top = Math.round(obj.y);
+      const bottom = Math.round(obj.y + dims.height) - 1;
+      
+      // Draw corners of collision box
+      const color = obj.constructor.name === 'Ship' ? "#0ff" : "#f0f";
+      
+      // Only draw if within screen bounds
+      if (left >= 0 && left < this.windowWidth && top >= 0 && top < this.windowHeight) {
+        this.display.draw(left, top, "┌", color);
+      }
+      if (right >= 0 && right < this.windowWidth && top >= 0 && top < this.windowHeight) {
+        this.display.draw(right, top, "┐", color);
+      }
+      if (left >= 0 && left < this.windowWidth && bottom >= 0 && bottom < this.windowHeight) {
+        this.display.draw(left, bottom, "└", color);
+      }
+      if (right >= 0 && right < this.windowWidth && bottom >= 0 && bottom < this.windowHeight) {
+        this.display.draw(right, bottom, "┘", color);
+      }
+    }
   }
 
   // Draw UI elements (health, score, etc.) with mobile-friendly sizing
   drawUI(ship, score = 0, difficultyInfo = null) {
     const health = ship.getHealthPercentage();
     const healthText = `Health: ${Math.round(health)}%`;
-    // const scoreText = `Score: ${score}`;
+    const scoreText = `Score: ${score}`;
     
     // Health in top-left
     const healthColor = health > 30 ? "#0f0" : (health > 10 ? "#ff0" : "#f00");
@@ -86,10 +121,10 @@ export class Renderer {
     }
     
     // Score in top-right (but check boundaries)
-    // const scoreX = Math.max(0, this.windowWidth - scoreText.length);
-    // for (let i = 0; i < scoreText.length && scoreX + i < this.windowWidth; i++) {
-    //   this.display.draw(scoreX + i, 0, scoreText[i], "#fff");
-    // }
+    const scoreX = Math.max(0, this.windowWidth - scoreText.length);
+    for (let i = 0; i < scoreText.length && scoreX + i < this.windowWidth; i++) {
+      this.display.draw(scoreX + i, 0, scoreText[i], "#fff");
+    }
     
     // Difficulty level in top-center (if provided)
     if (difficultyInfo && this.windowHeight > 10) {

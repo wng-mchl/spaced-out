@@ -30,6 +30,7 @@ export class Game extends ResponsiveGame {
     this.lastBackgroundUpdate = 0;
     this.backgroundUpdateInterval = 25;
     this.lastObstacleCount = 0; // Track obstacles for scoring
+    this.collisionDebugMode = true; // Enable collision debugging
     
     // Initialize game objects
     this.initializeGame();
@@ -159,7 +160,11 @@ export class Game extends ResponsiveGame {
     // All game objects for rendering
     this.updateGameObjects();
     
-    console.log('Game initialized with dynamic obstacles');
+    // Debug info
+    const shipDims = this.ship.getDimensions();
+    console.log(`🚀 Ship initialized at (${this.ship.x}, ${this.ship.y}) with dimensions ${shipDims.width}x${shipDims.height}`);
+    console.log(`🎮 Game area: ${this.windowWidth}x${this.windowHeight}`);
+    console.log('🎯 Game initialized with dynamic obstacles - collision detection active');
   }
 
   updateGameObjects() {
@@ -263,23 +268,58 @@ export class Game extends ResponsiveGame {
   // Check collisions between ship and obstacles every frame
   checkCollisions() {
     for (const obstacle of this.obstacles) {
-      if (this.ship.checkCollision(this.ship, obstacle)) {
+      if (this.isColliding(this.ship, obstacle)) {
         // Mark obstacle as having hit to prevent multiple damage
         if (!obstacle.hasHitShip) {
           obstacle.hasHitShip = true;
           this.ship.onCollision(obstacle);
           console.log(`💥 Ship hit by ${obstacle.name} at (${Math.round(obstacle.x)}, ${Math.round(obstacle.y)})!`);
           
-          // Visual feedback - could add screen shake or particle effects here
+          // Debug info
+          console.log(`Ship position: (${Math.round(this.ship.x)}, ${Math.round(this.ship.y)})`);
+          console.log(`Obstacle position: (${Math.round(obstacle.x)}, ${Math.round(obstacle.y)})`);
+          
+          // Visual feedback
           if (navigator.vibrate) {
             navigator.vibrate(200); // Haptic feedback on mobile
           }
-          
-          // Add a brief pause for dramatic effect (optional)
-          // You could add screen flash or other effects here
         }
       }
     }
+  }
+
+  // Simple and reliable collision detection
+  isColliding(obj1, obj2) {
+    const dims1 = obj1.getDimensions();
+    const dims2 = obj2.getDimensions();
+    
+    // Get bounding boxes
+    const box1 = {
+      left: Math.round(obj1.x),
+      right: Math.round(obj1.x + dims1.width),
+      top: Math.round(obj1.y),
+      bottom: Math.round(obj1.y + dims1.height)
+    };
+    
+    const box2 = {
+      left: Math.round(obj2.x),
+      right: Math.round(obj2.x + dims2.width),
+      top: Math.round(obj2.y),
+      bottom: Math.round(obj2.y + dims2.height)
+    };
+    
+    // Check if bounding boxes overlap
+    const collision = !(box1.right <= box2.left || 
+                       box1.left >= box2.right || 
+                       box1.bottom <= box2.top || 
+                       box1.top >= box2.bottom);
+    
+    // Debug logging for the first few frames to see what's happening
+    if (Math.random() < 0.01) { // Only log 1% of the time to avoid spam
+      console.log(`Collision check: Ship(${box1.left},${box1.top},${box1.right},${box1.bottom}) vs ${obj2.name}(${box2.left},${box2.top},${box2.right},${box2.bottom}) = ${collision}`);
+    }
+    
+    return collision;
   }
 
   render() {

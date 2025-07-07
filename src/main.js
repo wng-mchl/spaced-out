@@ -53,6 +53,7 @@ function monitorPerformance() {
     frameCount = 0;
     lastFpsTime = now;
   }
+  
   requestAnimationFrame(monitorPerformance);
 }
 
