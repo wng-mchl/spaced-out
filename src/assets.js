@@ -1,12 +1,12 @@
 // assets.js
 
 export const shipArt = [
-  [
+  
     "   __       ",
     "   \\ \\_____ ",
     "###[==_____>",
     "   /_/      "
-  ]
+  
 ]
 
 export const meteorArt = [
