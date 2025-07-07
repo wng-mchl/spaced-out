@@ -30,7 +30,7 @@ export class Game extends ResponsiveGame {
     this.lastBackgroundUpdate = 0;
     this.backgroundUpdateInterval = 25;
     this.lastObstacleCount = 0; // Track obstacles for scoring
-    this.collisionDebugMode = true; // Enable collision debugging
+    this.collisionDebugMode = false; // Enable collision debugging
     
     // Initialize game objects
     this.initializeGame();
@@ -239,30 +239,30 @@ export class Game extends ResponsiveGame {
     // Check game over condition
     if (this.ship.isDestroyed() && this.gameState === "playing") {
       this.gameState = "gameOver";
-      console.log("Game Over! Final score:", this.score);
+      console.log("Game Over!" );
     }
 
     // Update score based on survival time and obstacles dodged
-    if (this.gameState === "playing") {
-      // Time-based scoring
-      this.score += Math.floor(deltaTime / 50);
+    // if (this.gameState === "playing") {
+    //   // Time-based scoring
+    //   this.score += Math.floor(deltaTime / 50);
       
-      // Bonus points for dodging obstacles
-      const currentObstacleCount = this.obstacles.length;
-      if (currentObstacleCount > this.lastObstacleCount) {
-        // New obstacles spawned, potential for bonus points
-        this.lastObstacleCount = currentObstacleCount;
-      }
+    //   // Bonus points for dodging obstacles
+    //   const currentObstacleCount = this.obstacles.length;
+    //   if (currentObstacleCount > this.lastObstacleCount) {
+    //     // New obstacles spawned, potential for bonus points
+    //     this.lastObstacleCount = currentObstacleCount;
+    //   }
       
-      // Award points for obstacles that have passed the ship
-      for (const obstacle of this.obstacles) {
-        if (obstacle.spawned && !obstacle.passedShip && obstacle.x + obstacle.getDimensions().width < this.ship.x) {
-          obstacle.passedShip = true;
-          this.score += 50; // Bonus for dodging
-          console.log(`Dodged ${obstacle.name}! +50 points`);
-        }
-      }
-    }
+    //   // Award points for obstacles that have passed the ship
+    //   for (const obstacle of this.obstacles) {
+    //     if (obstacle.spawned && !obstacle.passedShip && obstacle.x + obstacle.getDimensions().width < this.ship.x) {
+    //       obstacle.passedShip = true;
+    //       this.score += 50; // Bonus for dodging
+    //       console.log(`Dodged ${obstacle.name}! +50 points`);
+    //     }
+    //   }
+    // }
   }
 
   // Check collisions between ship and obstacles every frame
@@ -356,7 +356,7 @@ export class Game extends ResponsiveGame {
       
     } else if (this.gameState === "gameOver") {
       const gameOverText = "=== GAME OVER ===";
-      const finalScore = `Final Score: ${this.score}`;
+      // const finalScore = `Final Score: ${this.score}`;
       const difficultyInfo = this.obstacleSpawner ? this.obstacleSpawner.getDifficultyInfo() : null;
       const levelReached = difficultyInfo ? `Level Reached: ${difficultyInfo.level}` : "";
       const restartText = "Press R to restart";
@@ -368,10 +368,10 @@ export class Game extends ResponsiveGame {
       }
       
       // Draw final score
-      startX = centerX - Math.floor(finalScore.length / 2);
-      for (let i = 0; i < finalScore.length; i++) {
-        this.display.draw(startX + i, centerY - 1, finalScore[i], "#fff", "#000");
-      }
+      // startX = centerX - Math.floor(finalScore.length / 2);
+      // for (let i = 0; i < finalScore.length; i++) {
+      //   this.display.draw(startX + i, centerY - 1, finalScore[i], "#fff", "#000");
+      // }
       
       // Draw level reached (if available)
       if (levelReached && this.windowHeight > 20) {
