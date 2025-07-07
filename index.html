@@ -1,13 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Space Navigation Game</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #000;
+      color: #fff;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    h1 {
+      margin-bottom: 10px;
+      color: #0ff;
+    }
+    
+    .instructions {
+      margin-bottom: 20px;
+      text-align: center;
+      color: #888;
+    }
+    
+    .game-container {
+      border: 2px solid #333;
+      background-color: #000;
+    }
+  </style>
+</head>
 <body>
-  <script type="module" src="src/main.js"></script>
+  <h1>🚀 Space Navigation Game</h1>
+  <div class="instructions">
+    Use arrow keys or WASD to move • P to pause • R to restart when game over
+  </div>
+  <div class="game-container">
+    <script type="module" src="./src/main.js"></script>
+  </div>
 </body>
-
 </html>
