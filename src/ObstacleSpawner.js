@@ -51,7 +51,7 @@ export class ObstacleSpawner {
     const initialLength = obstacles.length;
     for (let i = obstacles.length - 1; i >= 0; i--) {
       const obstacle = obstacles[i];
-      if (obstacle.x + obstacle.getDimensions().width < 0) {
+      if (obstacle.x + obstacle.getDimensions().width < 0 || obstacle.hasHitShip) {
         obstacles.splice(i, 1);
       }
     }
