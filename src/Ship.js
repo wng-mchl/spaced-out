@@ -25,13 +25,14 @@ export class Ship extends GameObject {
     // Store current position
     const oldX = this.x;
     const oldY = this.y;
-    
+
     // Temporarily move to new position for collision check
     this.x = newX;
     this.y = newY;
-    
+
     // Check collisions with obstacles at new position
     for (const obstacle of obstacles) {
+      if (obstacle.name == 'morse') continue;
       if (this.wouldCollide(obstacle)) {
         // Restore old position - don't move into collision
         this.x = oldX;
@@ -48,20 +49,20 @@ export class Ship extends GameObject {
   wouldCollide(obstacle) {
     const dims1 = this.getDimensions();
     const dims2 = obstacle.getDimensions();
-    
-    return !(this.x + dims1.width <= obstacle.x || 
-             this.x >= obstacle.x + dims2.width || 
-             this.y + dims1.height <= obstacle.y || 
-             this.y >= obstacle.y + dims2.height);
+
+    return !(this.x + dims1.width <= obstacle.x ||
+      this.x >= obstacle.x + dims2.width ||
+      this.y + dims1.height <= obstacle.y ||
+      this.y >= obstacle.y + dims2.height);
   }
 
   // Take damage
   takeDamage(amount = 1) {
     this.hits = Math.min(this.hits + amount, this.maxHits);
     this.art = shipArt;
-    
+
     console.log(`💥 Ship damage! Hits: ${this.hits}/${this.maxHits}, Health: ${this.getHealthPercentage()}%`);
-    
+
     if (this.isDestroyed()) {
       this.active = false;
       console.log("💀 Ship destroyed!");
@@ -89,7 +90,7 @@ export class Ship extends GameObject {
     if (other.name === "meteor" || other.name === "moon" || other.name === "asteroid") {
       console.log(`🔥 Ship took damage from ${other.name}! Health: ${this.getHealthPercentage()}%`);
       this.takeDamage(1);
-      
+
       // Visual feedback - change ship art immediately
       this.art = shipArt;
     }

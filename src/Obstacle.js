@@ -1,7 +1,7 @@
 // Obstacle.js - Game obstacles with movement capabilities
 
 import { GameObject } from './GameObject.js';
-import { meteorArt, moonArt } from './assets.js';
+import { meteorArt, moonArt, voyagerMessageMorse } from './assets.js';
 
 export class Obstacle extends GameObject {
   constructor(x, y, name, art, color) {
@@ -22,10 +22,10 @@ export class Obstacle extends GameObject {
   // Check if obstacle is off-screen (for cleanup)
   isOffScreen(windowWidth, windowHeight) {
     const dims = this.getDimensions();
-    return this.x + dims.width < 0 || 
-           this.x > windowWidth || 
-           this.y + dims.height < 0 || 
-           this.y > windowHeight;
+    return this.x + dims.width < 0 ||
+      this.x > windowWidth ||
+      this.y + dims.height < 0 ||
+      this.y > windowHeight;
   }
 }
 
@@ -59,6 +59,21 @@ export class Moon extends Obstacle {
   }
 }
 
+export class MorseStar extends Obstacle {
+  constructor(x, y, z) {
+    super(x, y, "morse", voyagerMessageMorse[z], "#745d58");
+    this.speed = 0.1; // Moons are slower but bigger
+  }
+
+  update(deltaTime) {
+    super.update(deltaTime);
+    // Add slight downward movement for realism
+    if (Math.random() < 0.01) { // 1% chance per frame
+      this.y += 0.1;
+    }
+  }
+}
+
 // New obstacle type for variety
 export class Asteroid extends Obstacle {
   constructor(x, y) {
@@ -68,7 +83,7 @@ export class Asteroid extends Obstacle {
       "*****",
       " *** "
     ];
-    
+
     super(x, y, "asteroid", asteroidArt, "orange");
     this.speed = 2.5; // Asteroids are fast and small
     this.rotationPhase = Math.random() * Math.PI * 2; // Random rotation start
@@ -76,12 +91,12 @@ export class Asteroid extends Obstacle {
 
   update(deltaTime) {
     super.update(deltaTime);
-    
+
     // Asteroids have erratic movement
     if (Math.random() < 0.05) { // 5% chance per frame
       this.direction.dy = (Math.random() - 0.5) * 0.5; // Random vertical drift
     }
-    
+
     // Rotation effect by slightly changing the art display
     this.rotationPhase += 0.1;
     if (this.rotationPhase > Math.PI * 2) {

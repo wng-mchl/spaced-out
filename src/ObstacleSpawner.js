@@ -1,30 +1,32 @@
 // ObstacleSpawner.js - Manages dynamic obstacle spawning and difficulty
 
-import { Meteor, Moon, Asteroid } from './Obstacle.js';
+import { Meteor, Moon, Asteroid, MorseStar } from './Obstacle.js';
 
 export class ObstacleSpawner {
   constructor(windowWidth, windowHeight) {
     this.windowWidth = windowWidth;
     this.windowHeight = windowHeight;
-    
+    this.morseIndex = 0;
+
     // Spawning parameters
     this.baseSpawnRate = 2000;     // Base time between spawns (ms)
     this.minSpawnRate = 500;      // Minimum time between spawns
     this.lastSpawnTime = 0;
     this.nextSpawnDelay = this.baseSpawnRate;
-    
+
     // Difficulty scaling
     this.difficultyLevel = 1;
     this.difficultyIncreaseInterval = 10000; // Increase difficulty every 10 seconds
     this.lastDifficultyIncrease = 0;
-    
+
     // Obstacle types and their spawn weights
     this.obstacleTypes = [
-      { type: 'meteor', weight: 40, minSpeed: 0.5, maxSpeed: 1.5 },
-      { type: 'moon', weight: 20, minSpeed: 0.25, maxSpeed: 1 },
-      { type: 'asteroid', weight: 30, minSpeed: 1, maxSpeed: 2 }
+      { type: 'meteor', weight: 40, minSpeed: 0.2, maxSpeed: 0.4 },
+      { type: 'moon', weight: 10, minSpeed: 0.15, maxSpeed: 0.3 },
+      { type: 'asteroid', weight: 20, minSpeed: 0.3, maxSpeed: 0.6 },
+      { type: 'morse', weight: 30, minSpeed: 0.15, maxSpeed: 0.25 }
     ];
-    
+
     console.log('ObstacleSpawner initialized');
   }
 
@@ -53,7 +55,7 @@ export class ObstacleSpawner {
         obstacles.splice(i, 1);
       }
     }
-    
+
     // Log when obstacles are removed for debugging
     if (obstacles.length < initialLength) {
       console.log(`Removed ${initialLength - obstacles.length} off-screen obstacles`);
@@ -64,15 +66,15 @@ export class ObstacleSpawner {
     // Choose obstacle type based on weights
     const obstacleType = this.selectObstacleType();
     const obstacleConfig = this.obstacleTypes.find(type => type.type === obstacleType.type);
-    
+
     // Random spawn position (right edge, random Y)
     const spawnX = this.windowWidth; // Start exactly at right edge
     const maxY = this.windowHeight - 8; // Leave margin for obstacle height
     const spawnY = Math.max(2, Math.random() * maxY); // Keep away from top edge
-    
+
     // Random speed based on obstacle type and difficulty
     const speed = this.calculateSpeed(obstacleConfig);
-    
+
     let obstacle;
     switch (obstacleType.type) {
       case 'meteor':
@@ -84,16 +86,20 @@ export class ObstacleSpawner {
       case 'asteroid':
         obstacle = new Asteroid(spawnX, spawnY);
         break;
-      default:
-        obstacle = new Meteor(spawnX, spawnY);
+      case 'morse':
+        obstacle = new MorseStar(spawnX, spawnY, this.morseIndex);
+        console.log(this.morseIndex)
+        this.morseIndex = (this.morseIndex + 1) % 20;
+      // default:
+      //   obstacle = new Meteor(spawnX, spawnY);
     }
-    
+
     // Set the speed and collision tracking
     obstacle.speed = speed;
     obstacle.spawned = true;      // Mark as dynamically spawned
     obstacle.hasHitShip = false;  // Track if this obstacle has already hit the ship
     obstacle.passedShip = false;  // Track if this obstacle has passed the ship for scoring
-    
+
     console.log(`✨ Spawned ${obstacleType.type} at (${spawnX}, ${Math.round(spawnY)}) with speed ${speed}, dimensions: ${obstacle.getDimensions().width}x${obstacle.getDimensions().height}`);
     return obstacle;
   }
@@ -101,22 +107,22 @@ export class ObstacleSpawner {
   selectObstacleType() {
     const totalWeight = this.obstacleTypes.reduce((sum, type) => sum + type.weight, 0);
     let random = Math.random() * totalWeight;
-    
+
     for (const type of this.obstacleTypes) {
       random -= type.weight;
       if (random <= 0) {
         return type;
       }
     }
-    
+
     // Fallback
     return this.obstacleTypes[0];
   }
 
   calculateSpeed(obstacleConfig) {
-    const baseSpeed = obstacleConfig.minSpeed + 
+    const baseSpeed = obstacleConfig.minSpeed +
       Math.random() * (obstacleConfig.maxSpeed - obstacleConfig.minSpeed);
-    
+
     // Apply difficulty multiplier
     const difficultyMultiplier = 1 + (this.difficultyLevel - 1) * 0.3;
     return baseSpeed * difficultyMultiplier;
@@ -134,7 +140,7 @@ export class ObstacleSpawner {
   increaseDifficulty() {
     this.difficultyLevel++;
     console.log(`🔥 Difficulty increased to level ${this.difficultyLevel}!`);
-    
+
     // You could add visual/audio feedback here
     // Maybe spawn a special effect or play a sound
   }
