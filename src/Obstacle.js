@@ -76,6 +76,17 @@ export class MorseStar extends Obstacle {
   }
 }
 
+export class Record extends Obstacle {
+  constructor (x, y) {
+    super(x, y, "record", recordArt, "gold");
+    this.speed=0.1;  
+  }
+
+  update(deltaTime) {
+      super.update(deltaTime);
+  }
+}
+
 // New obstacle type for variety
 export class Asteroid extends Obstacle {
   constructor(x, y) {

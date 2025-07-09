@@ -5,7 +5,7 @@ export class ResponsiveGame {
     this.minWidth = 120;   // Minimum game width in characters
     this.minHeight = 40;   // Minimum game height in characters
     this.maxWidth = 300;   // Maximum game width in characters
-    this.maxHeight = 100;  // Maximum game height in characters
+    this.maxHeight = 150;  // Maximum game height in characters
     this.aspectRatio = 3.2; // Target aspect ratio (width/height)
     
     this.currentDimensions = this.calculateOptimalSize();
