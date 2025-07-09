@@ -367,11 +367,11 @@ export class Game extends ResponsiveGame {
         this.display.draw(startX + i, centerY - 3, gameOverText[i], "#f00", "#000");
       }
       
-      // Draw final score
-      startX = centerX - Math.floor(finalScore.length / 2);
-      for (let i = 0; i < finalScore.length; i++) {
-        this.display.draw(startX + i, centerY - 1, finalScore[i], "#fff", "#000");
-      }
+    //   // Draw final score
+    //   startX = centerX - Math.floor(finalScore.length / 2);
+    //   for (let i = 0; i < finalScore.length; i++) {
+    //     this.display.draw(startX + i, centerY - 1, finalScore[i], "#fff", "#000");
+    //   }
       
       // Draw level reached (if available)
       if (levelReached && this.windowHeight > 20) {

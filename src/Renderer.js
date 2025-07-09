@@ -120,11 +120,11 @@ export class Renderer {
       this.display.draw(i, 0, healthText[i], healthColor);
     }
     
-    // Score in top-right (but check boundaries)
-    const scoreX = Math.max(0, this.windowWidth - scoreText.length);
-    for (let i = 0; i < scoreText.length && scoreX + i < this.windowWidth; i++) {
-      this.display.draw(scoreX + i, 0, scoreText[i], "#fff");
-    }
+    // // Score in top-right (but check boundaries)
+    // const scoreX = Math.max(0, this.windowWidth - scoreText.length);
+    // for (let i = 0; i < scoreText.length && scoreX + i < this.windowWidth; i++) {
+    //   this.display.draw(scoreX + i, 0, scoreText[i], "#fff");
+    // }
     
     // Difficulty level in top-center (if provided)
     if (difficultyInfo && this.windowHeight > 10) {
