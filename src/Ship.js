@@ -62,7 +62,7 @@ export class Ship extends GameObject {
     this.art = shipArt;
 
     console.log(`💥 Ship damage! Hits: ${this.hits}/${this.maxHits}, Health: ${this.getHealthPercentage()}%`);
-
+    
     if (this.isDestroyed()) {
       this.active = false;
       console.log("💀 Ship destroyed!");

@@ -19,6 +19,11 @@ export class Obstacle extends GameObject {
     this.y += this.direction.dy * this.speed;
   }
 
+  morseUpdate(deltaTime) {
+    this.x += this.direction.dx;
+    this.y += this.direction.dy;
+  }
+
   // Check if obstacle is off-screen (for cleanup)
   isOffScreen(windowWidth, windowHeight) {
     const dims = this.getDimensions();
@@ -62,15 +67,12 @@ export class Moon extends Obstacle {
 export class MorseStar extends Obstacle {
   constructor(x, y, z) {
     super(x, y, "morse", voyagerMessageMorse[z], "#745d58");
-    this.speed = 0.1; // Moons are slower but bigger
+    this.speed = 1; // Moons are slower but bigger
   }
 
-  update(deltaTime) {
-    super.update(deltaTime);
+  morseUpdate(deltaTime) {
+    super.morseUpdate(deltaTime);
     // Add slight downward movement for realism
-    if (Math.random() < 0.01) { // 1% chance per frame
-      this.y += 0.1;
-    }
   }
 }
 

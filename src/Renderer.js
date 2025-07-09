@@ -1,6 +1,6 @@
 // Renderer.js - Handles all drawing operations with responsive support
 
-import { background1 } from './assets.js';
+import { background1, background2 } from './assets.js';
 
 export class Renderer {
   constructor(display, windowWidth, windowHeight) {
@@ -15,7 +15,7 @@ export class Renderer {
   // Draw the scrolling background
   drawBackground() {
     for (let y = 0; y < this.windowHeight; y++) {
-      const line = background1[y % background1.length];
+      const line = background2[y % background2.length];
 
       for (let x = 0; x < this.windowWidth; x++) {
         const sourceX = (x + this.scrollOffset) % line.length;
@@ -55,7 +55,7 @@ export class Renderer {
 
   // Update scroll offset for background animation
   updateScroll() {
-    this.scrollOffset = (this.scrollOffset + 1) % background1[0].length;
+    this.scrollOffset = (this.scrollOffset + 1) % background2[0].length;
   }
 
   // Clear the display

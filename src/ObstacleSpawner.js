@@ -24,7 +24,7 @@ export class ObstacleSpawner {
       { type: 'meteor', weight: 40, minSpeed: 0.2, maxSpeed: 0.4 },
       { type: 'moon', weight: 10, minSpeed: 0.15, maxSpeed: 0.3 },
       { type: 'asteroid', weight: 20, minSpeed: 0.3, maxSpeed: 0.6 },
-      { type: 'morse', weight: 30, minSpeed: 0.15, maxSpeed: 0.25 }
+      // { type: 'morse', weight: 30, minSpeed: 1, maxSpeed: 1 }
     ];
 
     console.log('ObstacleSpawner initialized');
