@@ -183,6 +183,7 @@ export class Game extends ResponsiveGame {
     if (currentTime - this.lastBackgroundUpdate >= this.backgroundUpdateInterval) {
       if (this.gameState === "playing") {
         this.renderer.updateScroll();
+        this.renderer.updateMorse();
       }
       this.lastBackgroundUpdate = currentTime;
     }
