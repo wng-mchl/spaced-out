@@ -184,6 +184,7 @@ export class Game extends ResponsiveGame {
       if (this.gameState === "playing") {
         this.renderer.updateScroll();
         this.renderer.updateMorse();
+        
       }
       this.lastBackgroundUpdate = currentTime;
     }
@@ -329,6 +330,7 @@ export class Game extends ResponsiveGame {
   render() {
     this.renderer.clear();
     this.renderer.render(this.gameObjects);
+    console.log("LMFOOAOAOAOOAOAOAO");
 
     // Get difficulty info for UI
     const difficultyInfo = this.obstacleSpawner ? this.obstacleSpawner.getDifficultyInfo() : null;

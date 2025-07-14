@@ -181,10 +181,13 @@ export class Renderer {
           this.display.draw(x, y, "•", "#fc0");
         } else if (ch === "-") {
           this.display.draw(x, y, "−", "#fc0");
+          console.log("lmfaoooooooo");
         }
         // skip slashes and spaces for mystery
       }
     }
+
+    
   }
 
   // Update Morse code offset for animation
