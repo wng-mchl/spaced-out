@@ -178,9 +178,9 @@ export class Renderer {
         const x = (Math.floor(charIndex * 4 + i * 7) + this.scrollOffset) % this.windowWidth;
 
         if (ch === ".") {
-          this.display.draw(x, y, "•", "#fc0");
+          this.display.draw(x, y, "•", "#91749f");
         } else if (ch === "-") {
-          this.display.draw(x, y, "−", "#fc0");
+          this.display.draw(x, y, "−", "#91749f");
           console.log("lmfaoooooooo");
         }
         // skip slashes and spaces for mystery
