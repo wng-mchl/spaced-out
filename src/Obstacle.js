@@ -1,7 +1,7 @@
 // Obstacle.js - Game obstacles with movement capabilities
 
 import { GameObject } from './GameObject.js';
-import { meteorArt, moonArt, voyagerMessageMorse } from './assets.js';
+import { meteorArt, moonArt, asteroidArt, voyagerMessageMorse } from './assets.js';
 
 export class Obstacle extends GameObject {
   constructor(x, y, name, art, color) {
@@ -77,25 +77,19 @@ export class MorseStar extends Obstacle {
 }
 
 export class Record extends Obstacle {
-  constructor (x, y) {
+  constructor(x, y) {
     super(x, y, "record", recordArt, "gold");
-    this.speed=0.1;  
+    this.speed = 0.1;
   }
 
   update(deltaTime) {
-      super.update(deltaTime);
+    super.update(deltaTime);
   }
 }
 
 // New obstacle type for variety
 export class Asteroid extends Obstacle {
   constructor(x, y) {
-    // Create asteroid art
-    const asteroidArt = [
-      " *** ",
-      "*****",
-      " *** "
-    ];
 
     super(x, y, "asteroid", asteroidArt, "orange");
     this.speed = 2.5; // Asteroids are fast and small
