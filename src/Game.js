@@ -1,7 +1,6 @@
 // Game.js - Main game controller with responsive design and dynamic obstacles
 
 import { Ship } from './Ship.js';
-import { Meteor, Moon, Asteroid } from './Obstacle.js';
 import { Renderer } from './Renderer.js';
 import { InputHandler } from './InputHandler.js';
 import { ResponsiveGame } from './ResponsiveGame.js';
@@ -76,12 +75,19 @@ export class Game extends ResponsiveGame {
 
   applyResponsiveStyles() {
     const container = this.display.getContainer();
-    const styles = this.getContainerStyles();
 
-    Object.assign(container.style, styles);
-    container.classList.add('game-display');
+    // Remove problematic inline styles from ROT.js
+    container.style.position = "static";
+    container.style.left = "unset";
+    container.style.top = "unset";
+    container.style.margin = "auto";
+    container.style.display = "block";
+    container.style.maxWidth = "100%";
+    container.style.maxHeight = "100%";
+
+    // Apply class-based styles
+    container.classList.add("game-display");
   }
-
   // Override the resize handler from ResponsiveGame
   onResize(newDimensions) {
     const wasPlaying = this.gameState === "playing";

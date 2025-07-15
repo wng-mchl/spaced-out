@@ -1,14 +1,16 @@
 // main.js - Responsive game entry point
 
 import * as ROT from "rot-js";
+import './style.css';
 import { Game } from './Game.js';
 
 // Initialize display with temporary size (will be resized by ResponsiveGame)
-const display = new ROT.Display({ 
-  width: 100, 
+const display = new ROT.Display({
+  width: 100,
   height: 50,
   fontSize: 12,
-  fontFamily: "monospace"
+  fontFamily: "monospace",
+  className: "game-display"
 });
 
 // Add display to DOM
@@ -46,7 +48,7 @@ let lastFpsTime = performance.now();
 function monitorPerformance() {
   frameCount++;
   const now = performance.now();
-  
+
   if (now - lastFpsTime >= 1000) {
     const fps = Math.round((frameCount * 1000) / (now - lastFpsTime));
     console.log(`FPS: ${fps}`);

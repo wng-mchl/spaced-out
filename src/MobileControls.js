@@ -5,17 +5,17 @@ export class MobileControls {
     this.container = container;
     this.currentDirection = { dx: 0, dy: 0 };
     this.activeButtons = new Set();
-    
+
     this.createMobileUI();
     this.setupTouchEvents();
-    
+
     console.log('Mobile controls initialized');
   }
 
   createMobileUI() {
     // Create mobile controls container
     this.mobileUI = document.createElement('div');
-    this.mobileUI.className = 'mobile-controls';
+    this.mobileUI.className = 'mobile-controls mobile-layout';
     this.mobileUI.innerHTML = `
       <div class="direction-pad">
         <button class="dir-btn dir-up" data-dir="up">▲</button>
@@ -30,10 +30,10 @@ export class MobileControls {
         <button class="btn-restart" data-action="restart">🔄</button>
       </div>
     `;
-    
+
     document.body.appendChild(this.mobileUI);
     console.log('Mobile UI created');
-    
+
     // Get references
     this.directionButtons = this.mobileUI.querySelectorAll('[data-dir]');
     this.actionButtons = this.mobileUI.querySelectorAll('[data-action]');
@@ -43,41 +43,41 @@ export class MobileControls {
     // Direction button events
     this.directionButtons.forEach(button => {
       const direction = button.dataset.dir;
-      
+
       // Touch start
       button.addEventListener('touchstart', (e) => {
         e.preventDefault();
         this.startDirection(direction);
         button.classList.add('active');
       });
-      
+
       // Touch end
       button.addEventListener('touchend', (e) => {
         e.preventDefault();
         this.stopDirection(direction);
         button.classList.remove('active');
       });
-      
+
       // Touch cancel (when finger moves off button)
       button.addEventListener('touchcancel', (e) => {
         e.preventDefault();
         this.stopDirection(direction);
         button.classList.remove('active');
       });
-      
+
       // Mouse events for desktop testing
       button.addEventListener('mousedown', (e) => {
         e.preventDefault();
         this.startDirection(direction);
         button.classList.add('active');
       });
-      
+
       button.addEventListener('mouseup', (e) => {
         e.preventDefault();
         this.stopDirection(direction);
         button.classList.remove('active');
       });
-      
+
       button.addEventListener('mouseleave', (e) => {
         this.stopDirection(direction);
         button.classList.remove('active');
@@ -92,7 +92,7 @@ export class MobileControls {
         button.classList.add('pressed');
         setTimeout(() => button.classList.remove('pressed'), 150);
       });
-      
+
       // Mouse for desktop testing
       button.addEventListener('mousedown', (e) => {
         e.preventDefault();
@@ -111,7 +111,7 @@ export class MobileControls {
   startDirection(direction) {
     this.activeButtons.add(direction);
     this.updateDirection();
-    
+
     // Haptic feedback
     if (navigator.vibrate) {
       navigator.vibrate(30);
@@ -126,12 +126,12 @@ export class MobileControls {
   updateDirection() {
     let dx = 0;
     let dy = 0;
-    
+
     if (this.activeButtons.has('left')) dx -= 1;
     if (this.activeButtons.has('right')) dx += 1;
     if (this.activeButtons.has('up')) dy -= 1;
     if (this.activeButtons.has('down')) dy += 1;
-    
+
     this.currentDirection = { dx, dy };
   }
 
@@ -140,12 +140,12 @@ export class MobileControls {
     if (navigator.vibrate) {
       navigator.vibrate(50);
     }
-    
+
     console.log('Mobile action:', action);
-    
+
     // Dispatch custom event
-    window.dispatchEvent(new CustomEvent('mobileAction', { 
-      detail: { action } 
+    window.dispatchEvent(new CustomEvent('mobileAction', {
+      detail: { action }
     }));
   }
 
