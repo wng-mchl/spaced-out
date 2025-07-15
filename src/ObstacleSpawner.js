@@ -59,7 +59,7 @@ export class ObstacleSpawner {
 
         // If we're removing a golden record (because it was collected), reset the flag
         if (obstacle.type === 'record') {
-          this.goldenRecordExists = false;
+          this.goldenRecordExists = false;  
           console.log("Golden record removed - can spawn new one later");
         }
 
@@ -89,6 +89,7 @@ export class ObstacleSpawner {
     switch (obstacleType.type) {
       case 'meteor':
         obstacle = new Meteor(spawnX, spawnY);
+        
         break;
       case 'moon':
         obstacle = new Moon(spawnX, spawnY);
@@ -100,6 +101,8 @@ export class ObstacleSpawner {
         // Only spawn if difficulty level is 5 or higher AND no golden record exists
         if (this.difficultyLevel >= 3 && !this.goldenRecordExists) {
           obstacle = new Record(spawnX, spawnY);
+          obstacle.type = 'record';
+          console.log(obstacle.type)
           this.goldenRecordExists = true; // Mark that golden record now exists
           console.log("✨ GOLDEN VOYAGER RECORD SPAWNED! This is your only chance!");
         } else {
