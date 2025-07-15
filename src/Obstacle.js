@@ -1,7 +1,10 @@
 // Obstacle.js - Game obstacles with movement capabilities
 
 import { GameObject } from './GameObject.js';
-import { meteorArt, moonArt, asteroidArt, voyagerMessageMorse } from './assets.js';
+import { meteorArt, moonArt, asteroidArt, voyagerMessageMorse, recordArt } from './assets.js';
+
+
+
 
 export class Obstacle extends GameObject {
   constructor(x, y, name, art, color) {
@@ -79,11 +82,13 @@ export class MorseStar extends Obstacle {
 export class Record extends Obstacle {
   constructor(x, y) {
     super(x, y, "record", recordArt, "gold");
-    this.speed = 0.1;
+    this.speed = 0.3; // Slower, majestic movement
   }
 
   update(deltaTime) {
     super.update(deltaTime);
+    // Add a gentle floating effect
+    this.y += Math.sin(this.x * 0.02) * 0.05;
   }
 }
 
@@ -117,3 +122,4 @@ export class Asteroid extends Obstacle {
     return super.getOccupiedCells();
   }
 }
+

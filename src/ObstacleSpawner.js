@@ -1,6 +1,6 @@
 // ObstacleSpawner.js - Manages dynamic obstacle spawning and difficulty
 
-import { Meteor, Moon, Asteroid, MorseStar } from './Obstacle.js';
+import { Meteor, Moon, Asteroid, MorseStar, Record } from './Obstacle.js';
 
 export class ObstacleSpawner {
   constructor(windowWidth, windowHeight) {
@@ -18,14 +18,15 @@ export class ObstacleSpawner {
     this.difficultyLevel = 1;
     this.difficultyIncreaseInterval = 10000; // Increase difficulty every 10 seconds
     this.lastDifficultyIncrease = 0;
+    this.goldenRecordExists = false; 
 
     // Obstacle types and their spawn weights
-    this.obstacleTypes = [
-      { type: 'meteor', weight: 40, minSpeed: 0.2, maxSpeed: 0.4 },
-      { type: 'moon', weight: 10, minSpeed: 0.15, maxSpeed: 0.3 },
-      { type: 'asteroid', weight: 20, minSpeed: 0.3, maxSpeed: 0.6 },
-      // { type: 'morse', weight: 30, minSpeed: 1, maxSpeed: 1 }
-    ];
+this.obstacleTypes = [
+  { type: 'meteor', weight: 40, minSpeed: 0.2, maxSpeed: 0.4 },
+  { type: 'moon', weight: 10, minSpeed: 0.15, maxSpeed: 0.3 },
+  { type: 'asteroid', weight: 20, minSpeed: 0.3, maxSpeed: 0.6 },
+  { type: 'record', weight: 5, minSpeed: 0.2, maxSpeed: 0.4 } // Golden record
+];
 
     console.log('ObstacleSpawner initialized');
   }
@@ -47,15 +48,24 @@ export class ObstacleSpawner {
       }
     }
 
-    // Remove obstacles that have moved off-screen (left side)
+    // Remove obstacles that have moved off-screen (but keep golden records)
     const initialLength = obstacles.length;
     for (let i = obstacles.length - 1; i >= 0; i--) {
-      const obstacle = obstacles[i];
-      if (obstacle.x + obstacle.getDimensions().width < 0 || obstacle.hasHitShip) {
-        obstacles.splice(i, 1);
-      }
+     const obstacle = obstacles[i];
+  
+     // Remove if off-screen OR hit ship, BUT never remove golden records that just went offscreen
+    if (obstacle.hasHitShip || 
+      (obstacle.x + obstacle.getDimensions().width < 0 && obstacle.name !== 'record')) {
+    
+    // If we're removing a golden record (because it was collected), reset the flag
+    if (obstacle.name === 'record') {
+      this.goldenRecordExists = false;
+      console.log("Golden record removed - can spawn new one later");
     }
-
+    
+    obstacles.splice(i, 1);
+  }
+}
     // Log when obstacles are removed for debugging
     if (obstacles.length < initialLength) {
       console.log(`Removed ${initialLength - obstacles.length} off-screen obstacles`);
@@ -85,6 +95,17 @@ export class ObstacleSpawner {
         break;
       case 'asteroid':
         obstacle = new Asteroid(spawnX, spawnY);
+        break;
+    case 'record':
+        // Only spawn if difficulty level is 5 or higher AND no golden record exists
+            if (this.difficultyLevel >= 5 && !this.goldenRecordExists) {
+            obstacle = new Record(spawnX, spawnY);
+            this.goldenRecordExists = true; // Mark that golden record now exists
+            console.log("✨ GOLDEN VOYAGER RECORD SPAWNED! This is your only chance!");
+        } else {
+        // If level too low or golden record already exists, spawn a meteor instead
+             obstacle = new Meteor(spawnX, spawnY);
+        }
         break;
       case 'morse':
         obstacle = new MorseStar(spawnX, spawnY, this.morseIndex);
@@ -166,6 +187,7 @@ export class ObstacleSpawner {
     this.lastSpawnTime = 0;
     this.lastDifficultyIncrease = 0;
     this.nextSpawnDelay = this.baseSpawnRate;
+    this.goldenRecordExists = false;
     console.log('ObstacleSpawner reset');
   }
 }

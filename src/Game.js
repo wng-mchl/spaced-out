@@ -215,7 +215,7 @@ export class Game extends ResponsiveGame {
       this.togglePause();
     }
 
-    if (this.inputHandler.isActionTriggered("restart") && this.gameState === "gameOver") {
+    if (this.inputHandler.isActionTriggered("restart") && (this.gameState === "gameOver" || this.gameState === "victory")) {
       this.restart();
     }
 
@@ -268,11 +268,25 @@ export class Game extends ResponsiveGame {
   }
 
   // Check collisions between ship and obstacles every frame
-  checkCollisions() {
-    for (const obstacle of this.obstacles) {
-      if (obstacle.type !== 'morse') {
-        if (this.isColliding(this.ship, obstacle)) {
-          // Mark obstacle as having hit to prevent multiple damage
+checkCollisions() {
+  for (const obstacle of this.obstacles) {
+    if (obstacle.type !== 'morse') {
+      if (this.isColliding(this.ship, obstacle)) {
+        // Check if it's the golden record - WIN CONDITION!
+        if (obstacle.name === 'record') {
+          if (!obstacle.hasHitShip) {
+            obstacle.hasHitShip = true;
+            obstacle.active = false;
+            this.gameState = "victory";
+            console.log("🏆 YOU WIN! Found the Golden Voyager Record!");
+            
+            // Haptic feedback for victory
+            if (navigator.vibrate) {
+              navigator.vibrate([200, 100, 200, 100, 400]);
+            }
+          }
+        } else {
+          // Regular damage for other obstacles
           if (!obstacle.hasHitShip) {
             obstacle.hasHitShip = true;
             this.ship.onCollision(obstacle);
@@ -284,15 +298,14 @@ export class Game extends ResponsiveGame {
 
             // Visual feedback
             if (navigator.vibrate) {
-              navigator.vibrate(200); // Haptic feedback on mobile
+              navigator.vibrate(200);
             }
           }
         }
       }
-
     }
   }
-
+}
   // Simple and reliable collision detection
   isColliding(obj1, obj2) {
     const dims1 = obj1.getDimensions();
@@ -392,7 +405,39 @@ export class Game extends ResponsiveGame {
       for (let i = 0; i < restartText.length; i++) {
         this.display.draw(startX + i, centerY + 2, restartText[i], "#0f0", "#000");
       }
-    }
+      } else if (this.gameState === "victory") {
+  const victoryText = "🏆 VICTORY! 🏆";
+  const foundText = "You found the Golden Record!";
+  const difficultyInfo = this.obstacleSpawner ? this.obstacleSpawner.getDifficultyInfo() : null;
+  const levelReached = difficultyInfo ? `Level Reached: ${difficultyInfo.level}` : "";
+  const restartText = "Press R to play again";
+
+  // Draw victory title
+  let startX = centerX - Math.floor(victoryText.length / 2);
+  for (let i = 0; i < victoryText.length; i++) {
+    this.display.draw(startX + i, centerY - 3, victoryText[i], "#ffd700", "#000");
+  }
+
+  // Draw found message
+  startX = centerX - Math.floor(foundText.length / 2);
+  for (let i = 0; i < foundText.length; i++) {
+    this.display.draw(startX + i, centerY - 1, foundText[i], "#ffd700", "#000");
+  }
+
+//   // Draw level reached
+//   if (levelReached && this.windowHeight > 20) {
+//     startX = centerX - Math.floor(levelReached.length / 2);
+//     for (let i = 0; i < levelReached.length; i++) {
+//       this.display.draw(startX + i, centerY, levelReached[i], "#fff", "#000");
+//     }
+//   }
+
+  // Draw restart instruction
+  startX = centerX - Math.floor(restartText.length / 2);
+  for (let i = 0; i < restartText.length; i++) {
+    this.display.draw(startX + i, centerY + 2, restartText[i], "#0f0", "#000");
+  }
+    } 
   }
 
   startGameLoop() {

@@ -9,6 +9,18 @@ export const shipArt = [
 
 ]
 
+export const recordArt = [
+  "    .-.-.    ",
+  "  .-'     '-.  ",
+  " /           \\ ",
+  "|    VOYAGER  |",
+  "|      ★      |",
+  "|   GOLDEN    |",
+  " \\   RECORD  / ",
+  "  '-._   _.-'  ",
+  "      '-'      "
+];
+
 export const asteroidArt = [
   " .-. ",
   "(   )",
