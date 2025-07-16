@@ -49,8 +49,20 @@
         : '🕹️ Use Arrow keys or WASD to move • Press P to pause • R to restart';
     }
 
-    window.addEventListener('load', () => {
+    function handleOrientation() {
+      const rotateNotice = document.getElementById("rotate-notice");
+      const isPortrait = window.innerHeight > window.innerWidth
+        || window.matchMedia("(orientation: portrait)").matches;
+
+      if (rotateNotice) {
+        rotateNotice.style.display = isPortrait ? "flex" : "none";
+      }
+    }
+
+    window.addEventListener("load", () => {
       updateInstructions();
+      handleOrientation(); // also check immediately
+
       setTimeout(() => {
         const loading = document.getElementById('loading');
         if (loading) {
@@ -60,8 +72,14 @@
       }, 1200);
     });
 
-    window.addEventListener('resize', updateInstructions);
+    window.addEventListener("resize", () => {
+      updateInstructions();
+      handleOrientation();
+    });
 
+    window.addEventListener("orientationchange", handleOrientation);
+
+    // Prevent iOS zoom gestures
     ['gesturestart', 'gesturechange', 'gestureend'].forEach(evt =>
       document.addEventListener(evt, e => e.preventDefault())
     );
@@ -69,8 +87,6 @@
     if ('ontouchstart' in window) {
       document.body.classList.add('touch-device');
     }
-
-
   </script>
 
   <!-- Game entry point -->
