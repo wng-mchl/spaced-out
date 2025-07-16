@@ -4,13 +4,14 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   server: {
-    host: '0.0.0.0',  // Listen on all network interfaces
-    port: 3000,       // Set your preferred port
-    strictPort: false, // Try other ports if 3000 is taken
-    open: true        // Automatically open browser
+    host: true, // Allow access from external networks (e.g., ngrok or LAN)
+    port: 3000, // Your preferred dev port
+    strictPort: false, // Allow fallback if port 3000 is busy
+    open: true, // Optional: auto-open browser
+    allowedHosts: ['.ngrok-free.app'], // Allow ngrok domains for testing
   },
   preview: {
-    host: '0.0.0.0',  // Also for production preview
+    host: true,
     port: 4173
   }
 })
