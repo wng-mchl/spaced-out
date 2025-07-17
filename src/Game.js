@@ -238,6 +238,31 @@ export class Game extends ResponsiveGame {
       obj.update(deltaTime);
     }
 
+    // Apply black hole effects before collision check
+    for (const obstacle of this.obstacles) {
+      if (obstacle.name ==="blackhole")
+      {
+        console.log("HI");
+      }
+      if (obstacle.name === 'blackhole' && obstacle.affectsPlayer(this.ship)) {
+        // Gradually slow the ship (can cap it if needed)
+        this.ship.speed *= 0.98;
+        
+        
+        // Optional: apply damage over time
+        this.ship.health -= obstacle.damage * 0.05; // tweak rate to balance
+
+        // Optional: visual feedback
+        if (Math.random() < 0.1 && navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+
+        // Log for debug
+        console.log(`🌀 Ship is affected by black hole at (${obstacle.x}, ${obstacle.y})`);
+      }
+    }
+
+
     // Check collisions between ship and all obstacles every frame
     this.checkCollisions();
 

@@ -1,6 +1,6 @@
 // ObstacleSpawner.js - Manages dynamic obstacle spawning and difficulty
 
-import { Meteor, Moon, Asteroid, MorseStar, Record } from './Obstacle.js';
+import { Meteor, Moon, Asteroid, MorseStar, Record, BlackHole } from './Obstacle.js';
 
 export class ObstacleSpawner {
   constructor(windowWidth, windowHeight) {
@@ -25,7 +25,8 @@ export class ObstacleSpawner {
       { type: 'meteor', weight: 40, minSpeed: 0.2, maxSpeed: 0.4 },
       { type: 'moon', weight: 10, minSpeed: 0.15, maxSpeed: 0.3 },
       { type: 'asteroid', weight: 20, minSpeed: 0.3, maxSpeed: 0.6 },
-      { type: 'record', weight: 50, minSpeed: 0.2, maxSpeed: 0.4 } // Golden record
+      { type: 'record', weight: 50, minSpeed: 0.2, maxSpeed: 0.4 }, // Golden record
+      { type: 'blackhole', weight: 50, minSpeed: 0.1, maxSpeed: 0.4}
     ];
 
     console.log('ObstacleSpawner initialized');
@@ -43,6 +44,7 @@ export class ObstacleSpawner {
       const newObstacle = this.spawnObstacle();
       if (newObstacle) {
         obstacles.push(newObstacle);
+        console.log(newObstacle.name + "hi");
         this.lastSpawnTime = currentTime;
         this.scheduleNextSpawn();
       }
@@ -89,7 +91,6 @@ export class ObstacleSpawner {
     switch (obstacleType.type) {
       case 'meteor':
         obstacle = new Meteor(spawnX, spawnY);
-        
         break;
       case 'moon':
         obstacle = new Moon(spawnX, spawnY);
@@ -97,12 +98,14 @@ export class ObstacleSpawner {
       case 'asteroid':
         obstacle = new Asteroid(spawnX, spawnY);
         break;
+      case 'blackhole':
+        obstacle = new BlackHole(spawnX, spawnY);
+        console.log(obstacle.name);
+        break;
       case 'record':
         // Only spawn if difficulty level is 5 or higher AND no golden record exists
-        if (this.difficultyLevel >= 3 && !this.goldenRecordExists) {
+        if (this.difficultyLevel >= 7 && !this.goldenRecordExists) {
           obstacle = new Record(spawnX, spawnY);
-          obstacle.type = 'record';
-          console.log(obstacle.type)
           this.goldenRecordExists = true; // Mark that golden record now exists
           console.log("✨ GOLDEN VOYAGER RECORD SPAWNED! This is your only chance!");
         } else {
@@ -125,6 +128,7 @@ export class ObstacleSpawner {
     obstacle.passedShip = false;  // Track if this obstacle has passed the ship for scoring
 
     console.log(`✨ Spawned ${obstacleType.type} at (${spawnX}, ${Math.round(spawnY)}) with speed ${speed}, dimensions: ${obstacle.getDimensions().width}x${obstacle.getDimensions().height}`);
+    console.log(obstacle.name + " lol")
     return obstacle;
   }
 

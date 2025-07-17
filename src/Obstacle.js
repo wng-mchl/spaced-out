@@ -1,7 +1,7 @@
 // Obstacle.js - Game obstacles with movement capabilities
 
 import { GameObject } from './GameObject.js';
-import { meteorArt, moonArt, asteroidArt, voyagerMessageMorse, recordArt } from './assets.js';
+import { meteorArt, moonArt, asteroidArt, voyagerMessageMorse, recordArt, blackHoleArt } from './assets.js';
 
 
 
@@ -123,3 +123,43 @@ export class Asteroid extends Obstacle {
   }
 }
 
+export class BlackHole extends Obstacle {
+  constructor(x, y) {
+    super(x, y, "blackhole", blackHoleArt, "white");
+    this.speed = 0.5;
+    this.effectRadius = 5;
+    this.damage = 1;
+
+    // Blink state
+    this.visible = true;
+    this.blinkTimer = 0;
+    this.blinkInterval = 500; // ms
+  }
+
+  update(deltaTime) {
+    super.update(deltaTime);
+
+    // Swirl effect (optional)
+    this.y += Math.sin(this.x * 0.02) * 0.05;
+
+    // Blinking logic
+    this.blinkTimer += deltaTime * 1000;
+    if (this.blinkTimer >= this.blinkInterval) {
+      this.visible = !this.visible;
+      this.blinkTimer = 0;
+    }
+  }
+
+  render(display) {
+    if (this.visible) {
+      super.render(display); // only draw when visible
+    }
+  }
+
+  affectsPlayer(player) {
+    const dx = this.x - player.x;
+    const dy = this.y - player.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    return distance < this.effectRadius;
+  }
+}
