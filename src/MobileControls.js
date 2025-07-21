@@ -26,8 +26,8 @@ export class MobileControls {
         <button class="dir-btn dir-down" data-dir="down">▼</button>
       </div>
       <div class="action-buttons">
-        <button class="btn-pause" data-action="pause">⏸️</button>
-        <button class="btn-restart" data-action="restart">🔄</button>
+        <button class="btn-pause" data-action="pause">❚❚</button>
+        <button class="btn-restart" data-action="restart">↻</button>
       </div>
     `;
 
