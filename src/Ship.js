@@ -87,7 +87,7 @@ export class Ship extends GameObject {
 
   // Handle collision
   onCollision(other) {
-    if (other.name === "meteor" || other.name === "moon" || other.name === "asteroid") {
+    if (other.name === "meteor" || other.name === "moon" || other.name === "asteroid" || other.name === "blackhole") {
       console.log(`🔥 Ship took damage from ${other.name}! Health: ${this.getHealthPercentage()}%`);
       this.takeDamage(1);
 

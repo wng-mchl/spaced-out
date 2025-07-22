@@ -52,9 +52,9 @@ export const meteorArt = [
 export const blackHoleArt = [
   "     ___     ",
   "  .-'   '-.  ",
-  " /    o   \\ ",
-  " |  o o o    | ",
-  " \\   o    / ",
+  " /    o    \\",
+  " |  o o o  | ",
+  " \\    o    /",
   "  '-.___.-'"
 ];
 

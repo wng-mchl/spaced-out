@@ -240,15 +240,12 @@ export class Game extends ResponsiveGame {
 
     // Apply black hole effects before collision check
     for (const obstacle of this.obstacles) {
-      if (obstacle.name ==="blackhole")
-      {
-        console.log("HI");
-      }
+
       if (obstacle.name === 'blackhole' && obstacle.affectsPlayer(this.ship)) {
         // Gradually slow the ship (can cap it if needed)
-        this.ship.speed *= 0.98;
-        
-        
+        this.ship.speed *= 0.50;
+
+
         // Optional: apply damage over time
         this.ship.health -= obstacle.damage * 0.05; // tweak rate to balance
 
