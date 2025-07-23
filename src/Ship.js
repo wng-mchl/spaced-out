@@ -9,6 +9,7 @@ export class Ship extends GameObject {
     this.hits = 0;
     this.maxHits = 4;
     this.speed = 1;
+    this.baseSpeed = 1;
   }
 
   // Move the ship by dx, dy

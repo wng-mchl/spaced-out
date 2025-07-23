@@ -82,13 +82,23 @@ export class MorseStar extends Obstacle {
 export class Record extends Obstacle {
   constructor(x, y) {
     super(x, y, "record", recordArt, "gold");
-    this.speed = 0.3; // Slower, majestic movement
+
+    this.dx = -1.0;            // Glide left
+    this.glideDistance = 100; // Distance to glide before stopping
+    this.startX = x;          // Remember spawn X
+    this.stopped = false;
   }
 
   update(deltaTime) {
-    super.update(deltaTime);
-    // Add a gentle floating effect
-    this.y += Math.sin(this.x * 0.02) * 0.05;
+    if (!this.stopped) {
+      this.x += this.dx;
+
+      // Check if we've glided enough
+      if (Math.abs(this.x - this.startX) >= this.glideDistance) {
+        this.dx = 0;
+        this.stopped = true;
+      }
+    }
   }
 }
 
@@ -139,27 +149,42 @@ export class BlackHole extends Obstacle {
   update(deltaTime) {
     super.update(deltaTime);
 
-    // Swirl effect (optional)
+    // Optional vertical sway effect
     this.y += Math.sin(this.x * 0.02) * 0.05;
 
     // Blinking logic
-    this.blinkTimer += deltaTime * 1000;
-    if (this.blinkTimer >= this.blinkInterval) {
-      this.visible = !this.visible;
-      this.blinkTimer = 0;
+    const blinkSpeed = 0.02;
+    this.blinkAlpha += this.blinkDirection * blinkSpeed;
+
+    if (this.blinkAlpha <= 0.3) {
+      this.blinkAlpha = 0.3;
+      this.blinkDirection = 1;
+    } else if (this.blinkAlpha >= 1) {
+      this.blinkAlpha = 1;
+      this.blinkDirection = -1;
     }
   }
 
   render(display) {
-    if (this.visible) {
-      super.render(display); // only draw when visible
-    }
+    const [fgR, fgG, fgB] = ROT.Color.fromString(this.color);
+    const fadedColor = ROT.Color.toHex([
+      Math.floor(fgR * this.blinkAlpha),
+      Math.floor(fgG * this.blinkAlpha),
+      Math.floor(fgB * this.blinkAlpha),
+    ]);
+
+    display.draw(this.x, this.y, this.art, fadedColor);
   }
 
   affectsPlayer(player) {
     const dx = this.x - player.x;
     const dy = this.y - player.y;
+
     const distance = Math.sqrt(dx * dx + dy * dy);
-    return distance < this.effectRadius;
+
+    // Add some padding to the effect radius to match visual appearance
+    return distance < (this.effectRadius + 2); // +2 helps reach lower parts
   }
+
+
 }
