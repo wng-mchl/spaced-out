@@ -22,11 +22,11 @@ export class ObstacleSpawner {
 
     // Obstacle types and their spawn weights
     this.obstacleTypes = [
-      { type: 'meteor', weight: 40, minSpeed: 0.2, maxSpeed: 0.4 },
-      { type: 'moon', weight: 10, minSpeed: 0.15, maxSpeed: 0.3 },
-      { type: 'asteroid', weight: 20, minSpeed: 0.3, maxSpeed: 0.6 },
-      { type: 'record', weight: 50, minSpeed: 0.2, maxSpeed: 0.4 }, // Golden record
-      { type: 'blackhole', weight: 50, minSpeed: 0.1, maxSpeed: 0.4}
+      { type: 'meteor', weight: 40, minSpeed: 0.3, maxSpeed: 0.4 },
+      { type: 'moon', weight: 10, minSpeed: 0.25, maxSpeed: 0.3 },
+      { type: 'asteroid', weight: 20, minSpeed: 0.4, maxSpeed: 0.6 },
+      { type: 'record', weight: 50, minSpeed: 0.1, maxSpeed: 0.4 }, // Golden record
+      { type: 'blackhole', weight: 50, minSpeed: 0.2, maxSpeed: 0.4}
     ];
 
     console.log('ObstacleSpawner initialized');
@@ -153,13 +153,13 @@ export class ObstacleSpawner {
       Math.random() * (obstacleConfig.maxSpeed - obstacleConfig.minSpeed);
 
     // Apply difficulty multiplier
-    const difficultyMultiplier = 1 + (this.difficultyLevel - 1) * 0.5;
+    const difficultyMultiplier = 1 + (this.difficultyLevel - 1) * 0.4;
     return baseSpeed * difficultyMultiplier;
   }
 
   scheduleNextSpawn() {
     // Calculate next spawn delay based on difficulty
-    const difficultyFactor = Math.max(0.1, 1 - (this.difficultyLevel - 1) * 0.2);
+    const difficultyFactor = Math.max(0.1, 1 - (this.difficultyLevel - 1) * 0.1);
     this.nextSpawnDelay = Math.max(
       this.minSpawnRate,
       this.baseSpawnRate * difficultyFactor * (0.7 + Math.random() * 0.6)
