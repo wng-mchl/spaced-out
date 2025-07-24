@@ -29,7 +29,7 @@ export class Game extends ResponsiveGame {
     this.lastBackgroundUpdate = 0;
     this.backgroundUpdateInterval = 25;
     this.lastObstacleCount = 0; // Track obstacles for scoring
-    this.collisionDebugMode = false; // Enable collision debugging
+    this.collisionDebugMode = true; // Enable collision debugging
 
     // Initialize game objects
     this.initializeGame();
@@ -311,8 +311,10 @@ export class Game extends ResponsiveGame {
   // Check collisions between ship and obstacles every frame
   checkCollisions() {
     for (const obstacle of this.obstacles) {
+      
       if (obstacle.type !== 'morse') {
         if (this.isColliding(this.ship, obstacle)) {
+          console.log(obstacle.name)
           // Check if it's the golden record - WIN CONDITION!
           if (obstacle.name === 'record') {
             if (!obstacle.hasHitShip) {

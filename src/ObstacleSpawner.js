@@ -100,12 +100,12 @@ export class ObstacleSpawner {
         break;
       case 'blackhole':
         obstacle = new BlackHole(spawnX, spawnY);
-        console.log(obstacle.name);
         break;
       case 'record':
         // Only spawn if difficulty level is 5 or higher AND no golden record exists
-        if (this.difficultyLevel >= 2 && !this.goldenRecordExists) {
+        if (this.difficultyLevel >= 7 && !this.goldenRecordExists) {
           obstacle = new Record(spawnX, spawnY);
+          
           this.goldenRecordExists = true; // Mark that golden record now exists
           console.log("✨ GOLDEN VOYAGER RECORD SPAWNED! This is your only chance!");
           console.log(obstacle.x, obstacle.y)
@@ -153,13 +153,13 @@ export class ObstacleSpawner {
       Math.random() * (obstacleConfig.maxSpeed - obstacleConfig.minSpeed);
 
     // Apply difficulty multiplier
-    const difficultyMultiplier = 1 + (this.difficultyLevel - 1) * 0.3;
+    const difficultyMultiplier = 1 + (this.difficultyLevel - 1) * 0.5;
     return baseSpeed * difficultyMultiplier;
   }
 
   scheduleNextSpawn() {
     // Calculate next spawn delay based on difficulty
-    const difficultyFactor = Math.max(0.1, 1 - (this.difficultyLevel - 1) * 0.15);
+    const difficultyFactor = Math.max(0.1, 1 - (this.difficultyLevel - 1) * 0.2);
     this.nextSpawnDelay = Math.max(
       this.minSpawnRate,
       this.baseSpawnRate * difficultyFactor * (0.7 + Math.random() * 0.6)

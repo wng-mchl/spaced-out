@@ -84,7 +84,7 @@ export class Record extends Obstacle {
     super(x, y, "record", recordArt, "gold");
 
     this.dx = -1.0;            // Glide left
-    this.glideDistance = 100; // Distance to glide before stopping
+    this.glideDistance = 30; // Distance to glide before stopping
     this.startX = x;          // Remember spawn X
     this.stopped = false;
   }

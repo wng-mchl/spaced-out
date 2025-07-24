@@ -34,6 +34,7 @@ export class Ship extends GameObject {
     // Check collisions with obstacles at new position
     for (const obstacle of obstacles) {
       if (obstacle.name == 'morse') continue;
+      if(obstacle.name == "record")continue;
       if (this.wouldCollide(obstacle)) {
         // Restore old position - don't move into collision
         this.x = oldX;
