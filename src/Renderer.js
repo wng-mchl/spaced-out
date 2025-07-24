@@ -1,6 +1,6 @@
 // Renderer.js - Handles all drawing operations with responsive support
 
-import { background1, voyagerMessageMorse } from './assets.js';
+import { background1, voyagerMessageMorse } from "./assets.js";
 
 export class Renderer {
   constructor(display, windowWidth, windowHeight) {
@@ -50,7 +50,7 @@ export class Renderer {
 
     let { art, x, y, color } = gameObject;
     // Special rendering for ships based on damage state
-    if (gameObject.constructor.name === 'Ship') {
+    if (gameObject.constructor.name === "Ship") {
       const healthPercent = gameObject.getHealthPercentage();
       if (healthPercent <= 30) {
         color = "#f00"; // Red when heavily damaged
@@ -65,6 +65,23 @@ export class Renderer {
         const ch = art[row][col];
         if (ch !== " ") {
           this.display.draw(x + col, y + row, ch, color);
+        }
+      }
+    }
+
+    // Special visual shimmer effect for the golden record
+    const isRecord = gameObject.constructor.name === "Record";
+    const shimmerColors = ["#ff0", "#ffd700", "#fffacd", "#fafad2"];
+    const shimmerIndex = Math.floor(Date.now() / 200) % shimmerColors.length;
+
+    for (let row = 0; row < art.length; row++) {
+      for (let col = 0; col < art[row].length; col++) {
+        const ch = art[row][col];
+        if (ch !== " ") {
+          const charColor = isRecord
+            ? shimmerColors[(shimmerIndex + col + row) % shimmerColors.length]
+            : color;
+          this.display.draw(x + col, y + row, ch, charColor);
         }
       }
     }
@@ -106,19 +123,39 @@ export class Renderer {
       const bottom = Math.round(obj.y + dims.height) - 1;
 
       // Draw corners of collision box
-      const color = obj.constructor.name === 'Ship' ? "#0ff" : "#f0f";
+      const color = obj.constructor.name === "Ship" ? "#0ff" : "#f0f";
 
       // Only draw if within screen bounds
-      if (left >= 0 && left < this.windowWidth && top >= 0 && top < this.windowHeight) {
+      if (
+        left >= 0 &&
+        left < this.windowWidth &&
+        top >= 0 &&
+        top < this.windowHeight
+      ) {
         this.display.draw(left, top, "┌", color);
       }
-      if (right >= 0 && right < this.windowWidth && top >= 0 && top < this.windowHeight) {
+      if (
+        right >= 0 &&
+        right < this.windowWidth &&
+        top >= 0 &&
+        top < this.windowHeight
+      ) {
         this.display.draw(right, top, "┐", color);
       }
-      if (left >= 0 && left < this.windowWidth && bottom >= 0 && bottom < this.windowHeight) {
+      if (
+        left >= 0 &&
+        left < this.windowWidth &&
+        bottom >= 0 &&
+        bottom < this.windowHeight
+      ) {
         this.display.draw(left, bottom, "└", color);
       }
-      if (right >= 0 && right < this.windowWidth && bottom >= 0 && bottom < this.windowHeight) {
+      if (
+        right >= 0 &&
+        right < this.windowWidth &&
+        bottom >= 0 &&
+        bottom < this.windowHeight
+      ) {
         this.display.draw(right, bottom, "┘", color);
       }
     }
@@ -130,7 +167,7 @@ export class Renderer {
     const healthText = `Health: ${Math.round(health)}%`;
     // const scoreText = `Score: ${score}`;
     // Health in top-left
-    const healthColor = health > 30 ? "#0f0" : (health > 10 ? "#ff0" : "#f00");
+    const healthColor = health > 30 ? "#0f0" : health > 10 ? "#ff0" : "#f00";
     for (let i = 0; i < healthText.length && i < this.windowWidth; i++) {
       this.display.draw(i, 0, healthText[i], healthColor);
     }
@@ -175,7 +212,9 @@ export class Renderer {
         const ch = sentence[charIndex];
 
         // Spread it randomly across the screen horizontally
-        const x = (Math.floor(charIndex * 4 + i * 7) + this.scrollOffset) % this.windowWidth;
+        const x =
+          (Math.floor(charIndex * 4 + i * 7) + this.scrollOffset) %
+          this.windowWidth;
 
         if (ch === ".") {
           this.display.draw(x, y, "•", "#91749f");
@@ -185,8 +224,6 @@ export class Renderer {
         // skip slashes and spaces for mystery
       }
     }
-
-    
   }
 
   // Update Morse code offset for animation
@@ -204,4 +241,3 @@ export class Renderer {
     }
   }
 }
-
