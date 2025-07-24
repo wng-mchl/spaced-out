@@ -104,7 +104,7 @@ export class ObstacleSpawner {
       case 'record':
         // Only spawn if difficulty level is 5 or higher AND no golden record exists
         if (this.difficultyLevel >= 7 && !this.goldenRecordExists) {
-          obstacle = new Record(spawnX, spawnY);
+          obstacle = new Record(spawnX, 7);
           
           this.goldenRecordExists = true; // Mark that golden record now exists
           console.log("✨ GOLDEN VOYAGER RECORD SPAWNED! This is your only chance!");
