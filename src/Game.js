@@ -29,7 +29,7 @@ export class Game extends ResponsiveGame {
     this.lastBackgroundUpdate = 0;
     this.backgroundUpdateInterval = 25;
     this.lastObstacleCount = 0; // Track obstacles for scoring
-    this.collisionDebugMode = true; // Enable collision debugging
+    this.collisionDebugMode = false; // Enable collision debugging
 
     // Initialize game objects
     this.initializeGame();

@@ -162,7 +162,7 @@ export class ObstacleSpawner {
     const difficultyFactor = Math.max(0.1, 1 - (this.difficultyLevel - 1) * 0.1);
     this.nextSpawnDelay = Math.max(
       this.minSpawnRate,
-      this.baseSpawnRate * difficultyFactor * (0.7 + Math.random() * 0.6)
+      this.baseSpawnRate * difficultyFactor * (0.7 + Math.random() * 0.8)
     );
   }
 
